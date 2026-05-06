@@ -1,5 +1,43 @@
 let animeCache = {};
 
+const languageDatabase = {
+    "Naruto": ["Hindi", "Bengali"],
+    "One Piece": ["Hindi", "Tamil"],
+    "Solo Leveling": ["Hindi", "Bengali"],
+    "Bleach": ["Hindi"],
+    "Jujutsu Kaisen": ["Hindi", "Tamil"],
+    "Kimetsu no Yaiba": ["Hindi", "Bengali"]
+};
+
+function getLanguageTags(title){
+
+    let tags = `
+        <div class="language-tags">
+            <span>English</span>
+            <span>Japanese</span>
+    `;
+
+    if(languageDatabase[title]){
+
+        tags += `<span class="multi">Multi ▼</span>`;
+    }
+
+    tags += `</div>`;
+
+    return tags;
+}
+
+function getCommunityLanguages(title){
+
+    if(!languageDatabase[title]){
+        return "";
+    }
+
+    return languageDatabase[title]
+        .map(lang => `• ${lang}`)
+        .join("\n");
+}
+
 async function searchAnime() {
 
     const query = document.getElementById("searchInput").value;
@@ -43,6 +81,8 @@ async function searchAnime() {
                         🎬 Type: ${anime.type || "Unknown"}
                     </p>
 
+                    ${getLanguageTags(anime.title)}
+
                     <div class="button-group">
                         <button onclick="openModal(${anime.mal_id})">
                             View Details
@@ -80,7 +120,11 @@ function openModal(id){
 
     document.getElementById("modalGenres").innerText = `🎭 Genres: ${genres}`;
 
-    document.getElementById("modalSynopsis").innerText = anime.synopsis || "No synopsis available.";
+    const extraLanguages = getCommunityLanguages(anime.title);
+
+    document.getElementById("modalSynopsis").innerText = 
+        (anime.synopsis || "No synopsis available.") +
+        (extraLanguages ? `\n\n🌐 Community Languages:\n${extraLanguages}` : "");
 }
 
 function closeModal(){
