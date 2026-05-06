@@ -1,38 +1,51 @@
+*{
+    box-sizing:border-box;
+}
+
 body{
     margin:0;
     font-family:Arial, sans-serif;
     background:#050816;
     color:white;
+    overflow-x:hidden;
 }
 
 header{
     text-align:center;
-    padding:20px;
+    padding:20px 15px;
     background:linear-gradient(180deg,#091224,#111827);
     box-shadow:0 0 20px rgba(0,0,0,0.5);
 }
 
+.logo-box{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
 .logo{
-    width:220px;
-    max-width:80%;
+    width:260px;
+    max-width:90%;
+    height:auto;
+    display:block;
 }
 
 header h1{
-    margin:10px 0 5px;
+    margin:8px 0 5px;
     color:#58a6ff;
     font-size:42px;
 }
 
 header p{
     color:#d1d5db;
-    font-size:20px;
+    font-size:18px;
 }
 
 .search-box{
     display:flex;
     justify-content:center;
     gap:10px;
-    margin:25px 20px;
+    margin:25px 15px;
 }
 
 input{
@@ -46,7 +59,7 @@ input{
 }
 
 button{
-    padding:14px 22px;
+    padding:14px 20px;
     border:none;
     border-radius:15px;
     background:#58a6ff;
@@ -63,7 +76,7 @@ button:hover{
 
 .quick-section,
 .saved-section{
-    padding:20px;
+    padding:15px;
 }
 
 .quick-section h2,
@@ -96,7 +109,7 @@ button:hover{
     display:grid;
     grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
     gap:20px;
-    padding:20px;
+    padding:15px;
 }
 
 .card{
@@ -137,15 +150,35 @@ button:hover{
 }
 
 @media(max-width:600px){
+
+    .logo{
+        width:220px;
+    }
+
     header h1{
-        font-size:34px;
+        font-size:32px;
+    }
+
+    header p{
+        font-size:16px;
     }
 
     .search-box{
         flex-direction:row;
+        align-items:center;
     }
 
     input{
         width:100%;
+        font-size:14px;
+    }
+
+    button{
+        padding:12px 16px;
+        font-size:14px;
+    }
+
+    #animeResults{
+        grid-template-columns:1fr;
     }
 }
