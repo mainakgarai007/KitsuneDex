@@ -10,6 +10,18 @@ body{
     overflow-x:hidden;
 }
 
+.hidden{
+    display:none;
+}
+
+.loading,
+.empty-state{
+    text-align:center;
+    padding:20px;
+    color:#58a6ff;
+    font-size:18px;
+}
+
 header{
     text-align:center;
     padding:20px 15px;
@@ -124,8 +136,13 @@ button:hover{
     background:#161b22;
     border-radius:20px;
     overflow:hidden;
-    transition:0.3s;
     border:1px solid #30363d;
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-5px);
+    box-shadow:0 0 20px rgba(88,166,255,0.25);
 }
 
 .card img{
@@ -225,6 +242,7 @@ button:hover{
 #modalSynopsis{
     line-height:1.6;
     color:#d1d5db;
+    white-space:pre-line;
 }
 
 @media(max-width:600px){
@@ -239,10 +257,6 @@ button:hover{
 
     header p{
         font-size:15px;
-    }
-
-    .search-box{
-        align-items:center;
     }
 
     input{
