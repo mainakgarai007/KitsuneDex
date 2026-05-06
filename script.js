@@ -1,6 +1,10 @@
+let animeCache = {};
+
 async function searchAnime() {
 
     const query = document.getElementById("searchInput").value;
+
+    if(!query) return;
 
     const response = await fetch(
         `https://api.jikan.moe/v4/anime?q=${query}`
@@ -12,9 +16,11 @@ async function searchAnime() {
 
     animeResults.innerHTML = "";
 
+    animeCache = {};
+
     data.data.forEach(anime => {
 
-        const animeData = encodeURIComponent(JSON.stringify(anime));
+        animeCache[anime.mal_id] = anime;
 
         animeResults.innerHTML += `
             <div class="card">
@@ -30,31 +36,33 @@ async function searchAnime() {
                     </p>
 
                     <p class="anime-info">
-                        Episodes: ${anime.episodes || "?"}
+                        📺 Episodes: ${anime.episodes || "?"}
                     </p>
 
                     <p class="anime-info">
-                        Type: ${anime.type || "Unknown"}
+                        🎬 Type: ${anime.type || "Unknown"}
                     </p>
 
-                    <button onclick="openModal('${animeData}')">
-                        View Details
-                    </button>
+                    <div class="button-group">
+                        <button onclick="openModal(${anime.mal_id})">
+                            View Details
+                        </button>
 
-                    <br><br>
-
-                    <button onclick="saveAnime('${anime.title.replace(/'/g, "") }')">
-                        + Add To List
-                    </button>
+                        <button onclick="saveAnime('${anime.title.replace(/'/g, "") }')">
+                            + Add
+                        </button>
+                    </div>
                 </div>
             </div>
         `;
     });
 }
 
-function openModal(animeString){
+function openModal(id){
 
-    const anime = JSON.parse(decodeURIComponent(animeString));
+    const anime = animeCache[id];
+
+    if(!anime) return;
 
     document.getElementById("animeModal").style.display = "block";
 
@@ -76,7 +84,6 @@ function openModal(animeString){
 }
 
 function closeModal(){
-
     document.getElementById("animeModal").style.display = "none";
 }
 
@@ -91,11 +98,10 @@ window.onclick = function(event){
 
 function saveAnime(title){
 
-    let saved = JSON.parse(
-        localStorage.getItem("animeList")
-    ) || [];
+    let saved = JSON.parse(localStorage.getItem("animeList")) || [];
 
     if(!saved.includes(title)){
+
         saved.push(title);
 
         localStorage.setItem(
@@ -104,16 +110,12 @@ function saveAnime(title){
         );
 
         loadSavedAnime();
-
-        alert(title + " added to your list!");
     }
 }
 
 function loadSavedAnime(){
 
-    let saved = JSON.parse(
-        localStorage.getItem("animeList")
-    ) || [];
+    let saved = JSON.parse(localStorage.getItem("animeList")) || [];
 
     const savedAnime = document.getElementById("savedAnime");
 
