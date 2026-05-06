@@ -1,0 +1,79 @@
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#0d1117;
+    color:white;
+}
+
+header{
+    text-align:center;
+    padding:20px;
+    background:#111827;
+    box-shadow:0 0 10px rgba(0,0,0,0.5);
+}
+
+header h1{
+    margin:0;
+    color:#58a6ff;
+}
+
+.search-box{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin:20px;
+}
+
+input{
+    padding:12px;
+    width:250px;
+    border:none;
+    border-radius:10px;
+    outline:none;
+}
+
+button{
+    padding:12px 20px;
+    border:none;
+    border-radius:10px;
+    background:#58a6ff;
+    color:white;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+button:hover{
+    background:#1f6feb;
+}
+
+#animeResults{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+    padding:20px;
+}
+
+.card{
+    background:#161b22;
+    border-radius:15px;
+    overflow:hidden;
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:scale(1.03);
+}
+
+.card img{
+    width:100%;
+    height:300px;
+    object-fit:cover;
+}
+
+.card-content{
+    padding:15px;
+}
+
+.status{
+    color:#58a6ff;
+}
