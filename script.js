@@ -16,7 +16,7 @@ async function searchAnime() {
 
         animeResults.innerHTML += `
             <div class="card">
-                <img src="${anime.images.jpg.image_url}" alt="">
+                <img src="${anime.images.jpg.image_url}" alt="anime">
                 
                 <div class="card-content">
                     <h2>${anime.title}</h2>
@@ -27,8 +27,16 @@ async function searchAnime() {
                         ${anime.status}
                     </p>
 
-                    <button onclick="saveAnime('${anime.title}')">
-                        Add
+                    <p class="anime-info">
+                        Episodes: ${anime.episodes || "?"}
+                    </p>
+
+                    <p class="anime-info">
+                        Type: ${anime.type || "Unknown"}
+                    </p>
+
+                    <button onclick="saveAnime('${anime.title.replace(/'/g, "") }')">
+                        + Add To List
                     </button>
                 </div>
             </div>
@@ -50,6 +58,37 @@ function saveAnime(title){
             JSON.stringify(saved)
         );
 
+        loadSavedAnime();
+
         alert(title + " added to your list!");
     }
 }
+
+function loadSavedAnime(){
+
+    let saved = JSON.parse(
+        localStorage.getItem("animeList")
+    ) || [];
+
+    const savedAnime = document.getElementById("savedAnime");
+
+    savedAnime.innerHTML = "";
+
+    saved.forEach(title => {
+
+        savedAnime.innerHTML += `
+            <div class="saved-item">
+                📺 ${title}
+            </div>
+        `;
+    });
+}
+
+function quickSearch(name){
+
+    document.getElementById("searchInput").value = name;
+
+    searchAnime();
+}
+
+loadSavedAnime();
