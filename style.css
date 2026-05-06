@@ -149,6 +149,67 @@ button:hover{
     font-size:14px;
 }
 
+.modal{
+    display:none;
+    position:fixed;
+    z-index:1000;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.8);
+    overflow:auto;
+}
+
+.modal-content{
+    background:#111827;
+    margin:30px auto;
+    padding:20px;
+    border-radius:20px;
+    width:90%;
+    max-width:500px;
+    position:relative;
+    border:1px solid #30363d;
+}
+
+.modal-content img{
+    width:100%;
+    border-radius:15px;
+    margin-bottom:15px;
+}
+
+.close-btn{
+    position:absolute;
+    top:10px;
+    right:15px;
+    font-size:32px;
+    cursor:pointer;
+    color:white;
+}
+
+.language-tags{
+    display:flex;
+    gap:10px;
+    margin:15px 0;
+    flex-wrap:wrap;
+}
+
+.language-tags span{
+    background:#1f2937;
+    padding:8px 14px;
+    border-radius:999px;
+    font-size:14px;
+}
+
+.multi{
+    background:#2563eb !important;
+}
+
+#modalSynopsis{
+    line-height:1.6;
+    color:#d1d5db;
+}
+
 @media(max-width:600px){
 
     .logo{
