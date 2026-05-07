@@ -1,6 +1,7 @@
-// KitsuneDex Phase 1.3 Update
+// KitsuneDex Phase 1.4 Update
 let animeCache = {};
 let searchTimeout;
+let scrollTimeout;
 
 const notifySound = new Audio('sounds/notify.mp3');
 notifySound.volume = 0.8;
@@ -78,7 +79,6 @@ function renderContinueWatching(saved){
  if(!continueBox) return;
 
  const watching=saved.filter(a=>a.status==='Watching');
-
  continueBox.innerHTML='';
 
  if(!watching.length) return;
@@ -89,6 +89,26 @@ function renderContinueWatching(saved){
   continueBox.innerHTML+=`
   <div class="saved-item" style="margin-bottom:12px">
    <h3>📺 ${anime.title}</h3>
+   <p class="anime-info">Episode ${anime.progress}/${anime.total}</p>
+  </div>`;
+ });
+}
+
+function renderRecentActivity(saved){
+ const activity=document.getElementById('recentActivity');
+ if(!activity) return;
+
+ const recent=[...saved].sort((a,b)=>b.progress-a.progress).slice(0,3);
+ activity.innerHTML='';
+
+ if(!recent.length) return;
+
+ activity.innerHTML='<h2 style="color:#93c5fd">Recent Activity</h2>';
+
+ recent.forEach(anime=>{
+  activity.innerHTML+=`
+  <div class="saved-item" style="margin-bottom:10px">
+   <p class="anime-info">📺 ${anime.title}</p>
    <p class="anime-info">Episode ${anime.progress}/${anime.total}</p>
   </div>`;
  });
@@ -183,6 +203,10 @@ async function searchAnime(){
 }
 
 function saveAnime(title,status,image,totalEpisodes){
+ if(!title?.trim()) return;
+
+ totalEpisodes=Math.max(1,Number(totalEpisodes)||12);
+
  let saved=normalizeAnimeData(getSafeAnimeList());
 
  const existing=saved.find(a=>a.title.toLowerCase()===title.toLowerCase());
@@ -196,7 +220,7 @@ function saveAnime(title,status,image,totalEpisodes){
    title,
    status,
    progress:status==='Completed' ? totalEpisodes : 0,
-   total:totalEpisodes || 12,
+   total:totalEpisodes,
    favorite:false,
    season:1,
    image:image || '',
@@ -233,6 +257,8 @@ function toggleFavorite(title){
 }
 
 function deleteAnime(title){
+ if(!title || typeof title!=='string') return;
+
  let saved=normalizeAnimeData(getSafeAnimeList());
  saved=saved.filter(a=>a.title!==title);
  saveLocalAnime(saved);
@@ -293,16 +319,44 @@ window.onclick=function(event){
  }
 }
 
+window.addEventListener('touchstart',(event)=>{
+ const modal=document.getElementById('animeModal');
+ if(event.target===modal){
+  closeModal();
+ }
+});
+
+window.addEventListener('error',(e)=>{
+ if(e.target.tagName==='IMG'){
+  e.target.src='https://placehold.co/600x400?text=Anime';
+ }
+},true);
+
+window.addEventListener('scroll',()=>{
+ clearTimeout(scrollTimeout);
+ scrollTimeout=setTimeout(()=>{
+  document.body.style.pointerEvents='auto';
+ },50);
+});
+
 function loadSavedAnime(){
  const savedAnime=document.getElementById('savedAnime');
  if(!savedAnime) return;
 
  let saved=normalizeAnimeData(getSafeAnimeList());
 
+ const cleaned=saved.filter(a=>a.title && a.total>0);
+
+ if(cleaned.length!==saved.length){
+  saveLocalAnime(cleaned);
+  saved=cleaned;
+ }
+
  savedAnime.innerHTML='';
 
  renderStats(saved);
  renderContinueWatching(saved);
+ renderRecentActivity(saved);
 
  if(!saved.length){
   savedAnime.innerHTML='<p>No anime added yet 😭</p>';
@@ -353,5 +407,9 @@ function loadSavedAnime(){
 }
 
 window.addEventListener('DOMContentLoaded',()=>{
- loadSavedAnime();
+ try{
+  loadSavedAnime();
+ }catch(error){
+  console.log('Phase 1.4 protection active 😭🔥');
+ }
 });
