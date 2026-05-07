@@ -76,8 +76,8 @@ body {
 }
 
 .logo {
-  width: 150px;
-  height: 150px;
+  width: clamp(96px, 32vw, 150px);
+  height: clamp(96px, 32vw, 150px);
   object-fit: contain;
   border-radius: 0;
   box-shadow: none;
@@ -411,7 +411,10 @@ h1 {
 .actions .heart-btn {
   width: 44px;
   min-width: 44px;
-  padding: 0.6rem 0.2rem;
+  min-height: 44px;
+  display: grid;
+  place-items: center;
+  padding: 0;
 }
 
 .list-note {

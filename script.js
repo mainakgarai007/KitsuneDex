@@ -8,6 +8,7 @@ const notifyAudio = document.getElementById('notifyAudio');
 const appState = {
   filter: 'All',
   search: '',
+  searchDebounceTimer: null,
   selectedAnimeId: null,
   notesAnimeId: null,
   deleteAnimeId: null,
@@ -421,12 +422,12 @@ function renderList() {
           <span class="badge ${statusClass}">${anime.status}</span>
           <p class="small">Episode ${anime.watchedEpisodes}/${anime.episodes}</p>
           <div class="progress"><div class="progress-fill" style="width:${progress}%"></div></div>
-          <p class="small list-note">📝 ${safeNotes}</p>
+          <p class="small list-note" title="${safeNotes}">📝 ${safeNotes}</p>
 
           <div class="actions">
             <button data-action="details" data-id="${anime.id}">Details</button>
             <button data-action="episode" data-id="${anime.id}">+ Episode</button>
-            <button class="heart-btn" data-action="favorite" data-id="${anime.id}">${anime.favorite ? '❤️' : '🤍'}</button>
+            <button class="heart-btn" data-action="favorite" data-id="${anime.id}" aria-label="${anime.favorite ? 'Unfavorite anime' : 'Favorite anime'}" title="${anime.favorite ? 'Unfavorite anime' : 'Favorite anime'}">${anime.favorite ? '❤️' : '🤍'}</button>
             <button data-action="notes" data-id="${anime.id}">Edit Note</button>
             <button data-action="delete" data-id="${anime.id}">Remove</button>
           </div>
@@ -474,9 +475,13 @@ function bindEvents() {
   });
 
   document.getElementById('searchInput').addEventListener('input', (e) => {
-    appState.search = e.target.value.trim();
-    renderTrending();
-    renderList();
+    const value = e.target.value.trim();
+    clearTimeout(appState.searchDebounceTimer);
+    appState.searchDebounceTimer = setTimeout(() => {
+      appState.search = value;
+      renderTrending();
+      renderList();
+    }, 180);
   });
 
   document.querySelector('.search-btn')?.addEventListener('click', () => {
@@ -484,6 +489,16 @@ function bindEvents() {
     appState.search = document.getElementById('searchInput').value.trim();
     renderTrending();
     renderList();
+  });
+
+  document.getElementById('menuIconBtn')?.addEventListener('click', () => {
+    clickSound();
+    showToast('Menu coming soon');
+  });
+
+  document.getElementById('topSearchBtn')?.addEventListener('click', () => {
+    clickSound();
+    document.getElementById('searchInput').focus();
   });
 
   document.getElementById('statusTabs').addEventListener('click', (e) => {
