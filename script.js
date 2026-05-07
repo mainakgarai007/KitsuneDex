@@ -375,7 +375,7 @@ function renderTrending() {
       <img src="${safeImageUrl(anime.image)}" alt="${esc(anime.title)}" loading="lazy" />
       <div class="body">
         <h3 class="trend-title">${esc(anime.title)}</h3>
-        <p class="rating">⭐ ${anime.rating}</p>
+        <p class="rating">⭐ ${esc(anime.rating)}</p>
       </div>
     </article>
   `).join('');
