@@ -1,7 +1,8 @@
-// KitsuneDex Phase 1.4 Update
+// KitsuneDex Phase 1.5 Update
 let animeCache = {};
 let searchTimeout;
 let scrollTimeout;
+let clickCooldown=false;
 
 const notifySound = new Audio('sounds/notify.mp3');
 notifySound.volume = 0.8;
@@ -12,13 +13,17 @@ function playNotifySound(){
 }
 
 function showToast(message){
- document.querySelector('.toast-notification')?.remove();
+ document.querySelectorAll('.toast-notification').forEach(toast=>toast.remove());
 
  const toast=document.createElement('div');
  toast.className='toast-notification';
  toast.textContent=message;
- toast.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#2563eb;color:#fff;padding:14px 22px;border-radius:18px;z-index:9999;font-weight:bold;box-shadow:0 0 20px rgba(37,99,235,.4)';
+ toast.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#2563eb;color:#fff;padding:14px 22px;border-radius:18px;z-index:9999;font-weight:bold;box-shadow:0 0 20px rgba(37,99,235,.4);opacity:0;transition:.25s';
  document.body.appendChild(toast);
+
+ setTimeout(()=>{
+  toast.style.opacity='1';
+ },10);
 
  playNotifySound();
  setTimeout(()=>toast.remove(),2200);
@@ -37,7 +42,7 @@ function normalizeAnimeData(saved){
  return saved.map(anime=>({
   title:String(anime.title || anime || 'Unknown Anime').trim(),
   status:anime.status || 'Watching',
-  progress:Math.max(0,Number(anime.progress)||0),
+  progress:Math.min(Math.max(0,Number(anime.progress)||0),Math.max(1,Number(anime.total)||12)),
   total:Math.max(1,Number(anime.total)||12),
   favorite:Boolean(anime.favorite),
   season:Math.max(1,Number(anime.season)||1),
@@ -45,6 +50,20 @@ function normalizeAnimeData(saved){
   nextSeason:anime.nextSeason || 'Coming Soon',
   notes:(anime.notes || '').trim()
  }));
+}
+
+function sortAnimeList(saved){
+ return [...saved].sort((a,b)=>{
+  if(a.favorite!==b.favorite){
+   return b.favorite-a.favorite;
+  }
+
+  if(a.status!==b.status){
+   return a.status==='Watching' ? -1 : 1;
+  }
+
+  return b.progress-a.progress;
+ });
 }
 
 function saveLocalAnime(saved){
@@ -114,6 +133,18 @@ function renderRecentActivity(saved){
  });
 }
 
+function animateModal(){
+ const modal=document.getElementById('animeModal');
+ if(!modal) return;
+
+ modal.style.opacity='0';
+ modal.style.transition='0.25s';
+
+ setTimeout(()=>{
+  modal.style.opacity='1';
+ },10);
+}
+
 function showHome(){
  document.getElementById('homePage')?.classList.remove('hidden');
  document.getElementById('myListPage')?.classList.add('hidden');
@@ -176,7 +207,7 @@ async function searchAnime(){
   const safeImage=anime.images?.jpg?.large_image_url || 'https://placehold.co/600x400?text=Anime';
 
   card.innerHTML=`
-   <img loading="lazy" src="${safeImage}" alt="anime">
+   <img loading="lazy" decoding="async" src="${safeImage}" alt="anime">
    <div class="card-content">
     <h2>${safeTitle}</h2>
     <p>⭐ ${anime.score || 'N/A'}</p>
@@ -286,6 +317,8 @@ function openSavedAnimeDetails(title){
  if(!anime) return;
 
  document.getElementById('animeModal').style.display='block';
+ animateModal();
+
  document.getElementById('modalImage').src=anime.image;
  document.getElementById('modalTitle').textContent=anime.title;
  document.getElementById('modalScore').textContent='⭐ Saved Anime';
@@ -300,6 +333,8 @@ function openModal(id){
  if(!anime) return;
 
  document.getElementById('animeModal').style.display='block';
+ animateModal();
+
  document.getElementById('modalImage').src=anime.images?.jpg?.large_image_url || '';
  document.getElementById('modalTitle').textContent=anime.title;
  document.getElementById('modalScore').textContent=`⭐ Rating: ${anime.score || 'N/A'}`;
@@ -339,18 +374,42 @@ window.addEventListener('scroll',()=>{
  },50);
 });
 
+document.addEventListener('click',(e)=>{
+ if(e.target.tagName==='BUTTON'){
+
+  if(clickCooldown){
+   e.preventDefault();
+   return;
+  }
+
+  clickCooldown=true;
+
+  setTimeout(()=>{
+   clickCooldown=false;
+  },120);
+ }
+});
+
 function loadSavedAnime(){
  const savedAnime=document.getElementById('savedAnime');
  if(!savedAnime) return;
 
  let saved=normalizeAnimeData(getSafeAnimeList());
 
- const cleaned=saved.filter(a=>a.title && a.total>0);
+ const unique=[];
+ const titles=new Set();
 
- if(cleaned.length!==saved.length){
-  saveLocalAnime(cleaned);
-  saved=cleaned;
- }
+ saved.forEach(anime=>{
+  const lower=anime.title.toLowerCase();
+
+  if(!titles.has(lower)){
+   titles.add(lower);
+   unique.push(anime);
+  }
+ });
+
+ saved=sortAnimeList(unique);
+ saveLocalAnime(saved);
 
  savedAnime.innerHTML='';
 
@@ -363,11 +422,9 @@ function loadSavedAnime(){
   return;
  }
 
- saved.sort((a,b)=>Number(b.favorite)-Number(a.favorite));
-
  const fragment=document.createDocumentFragment();
 
- saved.forEach(anime=>{
+ saved.forEach((anime,index)=>{
 
   const safeProgress=Math.min(anime.progress,anime.total);
   const progressPercent=Math.floor((safeProgress/anime.total)*100);
@@ -376,8 +433,17 @@ function loadSavedAnime(){
   const card=document.createElement('div');
   card.className='saved-item';
 
+  card.style.opacity='0';
+  card.style.transform='translateY(10px)';
+  card.style.transition='0.25s';
+
+  setTimeout(()=>{
+   card.style.opacity='1';
+   card.style.transform='translateY(0px)';
+  },index*40);
+
   card.innerHTML=`
-   <img loading="lazy" onclick="openSavedAnimeDetails('${anime.title.replace(/'/g,'')}')" src="${anime.image}" style="width:100%;height:200px;object-fit:cover;border-radius:18px;margin-bottom:14px;cursor:pointer">
+   <img loading="lazy" decoding="async" onclick="openSavedAnimeDetails('${anime.title.replace(/'/g,'')}')" src="${anime.image}" style="width:100%;height:200px;object-fit:cover;border-radius:18px;margin-bottom:14px;cursor:pointer">
 
    <div class="list-top">
     <h3>${anime.favorite ? '❤️' : '📺'} ${anime.title}</h3>
@@ -410,6 +476,6 @@ window.addEventListener('DOMContentLoaded',()=>{
  try{
   loadSavedAnime();
  }catch(error){
-  console.log('Phase 1.4 protection active 😭🔥');
+  console.log('Phase 1.5 protection active 😭🔥');
  }
 });
