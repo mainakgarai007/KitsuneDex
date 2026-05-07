@@ -17,6 +17,7 @@ function showHome(){
 function showMyList(){
     document.getElementById("homePage").classList.add("hidden");
     document.getElementById("myListPage").classList.remove("hidden");
+    loadSavedAnime();
 }
 
 function getLanguageTags(title){
@@ -56,9 +57,7 @@ async function searchAnime() {
     document.getElementById("loading").classList.remove("hidden");
     document.getElementById("emptyState").classList.add("hidden");
 
-    const response = await fetch(
-        `https://api.jikan.moe/v4/anime?q=${query}`
-    );
+    const response = await fetch(`https://api.jikan.moe/v4/anime?q=${query}`);
 
     const data = await response.json();
 
@@ -82,7 +81,7 @@ async function searchAnime() {
         animeResults.innerHTML += `
             <div class="card">
                 <img src="${anime.images.jpg.image_url}" alt="anime">
-                
+
                 <div class="card-content">
                     <h2>${anime.title}</h2>
 
@@ -90,28 +89,26 @@ async function searchAnime() {
 
                     <p class="status">${anime.status}</p>
 
-                    <p class="anime-info">
-                        📺 Episodes: ${anime.episodes || "?"}
-                    </p>
+                    <p class="anime-info">📺 Episodes: ${anime.episodes || "?"}</p>
 
-                    <p class="anime-info">
-                        🎬 Type: ${anime.type || "Unknown"}
-                    </p>
+                    <p class="anime-info">🎬 Type: ${anime.type || "Unknown"}</p>
 
                     ${getLanguageTags(anime.title)}
 
                     <div class="button-group">
+
                         <button onclick="openModal(${anime.mal_id})">
                             Details
                         </button>
 
-                        <button onclick="saveAnime('${anime.title.replace(/'/g, "") }')">
+                        <button onclick="saveAnime('${anime.title.replace(/'/g, "") }','Watching')">
                             Watching
                         </button>
 
-                        <button onclick="markCompleted('${anime.title.replace(/'/g, "") }')">
+                        <button onclick="saveAnime('${anime.title.replace(/'/g, "") }','Completed')">
                             ✔ Done
                         </button>
+
                     </div>
                 </div>
             </div>
@@ -139,7 +136,7 @@ function openModal(id){
 
     const extraLanguages = getCommunityLanguages(anime.title);
 
-    document.getElementById("modalSynopsis").innerText = 
+    document.getElementById("modalSynopsis").innerText =
         (anime.synopsis || "No synopsis available.") +
         (extraLanguages ? `\n\n🌐 Community Languages:\n${extraLanguages}` : "");
 }
@@ -149,6 +146,7 @@ function closeModal(){
 }
 
 window.onclick = function(event){
+
     const modal = document.getElementById("animeModal");
 
     if(event.target == modal){
@@ -156,35 +154,21 @@ window.onclick = function(event){
     }
 }
 
-function saveAnime(title){
+function saveAnime(title,status){
 
     let saved = JSON.parse(localStorage.getItem("animeList")) || [];
 
-    if(!saved.includes(title)){
-        saved.push(title);
+    const existing = saved.find(anime => anime.title === title);
 
-        localStorage.setItem(
-            "animeList",
-            JSON.stringify(saved)
-        );
-
-        loadSavedAnime();
+    if(existing){
+        existing.status = status;
+    }else{
+        saved.push({title,status});
     }
-}
 
-function markCompleted(title){
+    localStorage.setItem("animeList", JSON.stringify(saved));
 
-    let completed = JSON.parse(localStorage.getItem("completedAnime")) || [];
-
-    if(!completed.includes(title)){
-
-        completed.push(title);
-
-        localStorage.setItem(
-            "completedAnime",
-            JSON.stringify(completed)
-        );
-    }
+    loadSavedAnime();
 }
 
 function loadSavedAnime(){
@@ -200,11 +184,16 @@ function loadSavedAnime(){
         return;
     }
 
-    saved.forEach(title => {
+    saved.forEach(anime => {
+
+        let statusClass = anime.status === 'Completed' ? 'completed-badge' : 'watching-badge';
 
         savedAnime.innerHTML += `
             <div class="saved-item">
-                📺 ${title}
+                <div>
+                    <h3>📺 ${anime.title}</h3>
+                    <span class="${statusClass}">${anime.status}</span>
+                </div>
             </div>
         `;
     });
