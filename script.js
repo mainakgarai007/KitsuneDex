@@ -277,6 +277,19 @@ function saveAnime(title,status){
     showToast(`${title} added to ${status}`);
 }
 
+function deleteAnime(title){
+
+    let saved = JSON.parse(localStorage.getItem("animeList")) || [];
+
+    saved = saved.filter(anime => anime.title !== title);
+
+    localStorage.setItem("animeList", JSON.stringify(saved));
+
+    loadSavedAnime();
+
+    showToast(`${title} deleted 🗑️`);
+}
+
 function loadSavedAnime(){
 
     let saved = JSON.parse(localStorage.getItem("animeList")) || [];
@@ -292,6 +305,13 @@ function loadSavedAnime(){
 
     saved.forEach(anime => {
 
+        if(typeof anime === 'string'){
+            anime = {
+                title: anime,
+                status: 'Watching'
+            };
+        }
+
         let statusClass = anime.status === 'Completed' ? 'completed-badge' : 'watching-badge';
 
         savedAnime.innerHTML += `
@@ -299,6 +319,12 @@ function loadSavedAnime(){
                 <div class="list-top">
                     <h3>📺 ${anime.title}</h3>
                     <span class="${statusClass}">${anime.status}</span>
+                </div>
+
+                <div class="list-buttons">
+                    <button onclick="deleteAnime('${anime.title.replace(/'/g, "")}')" class="remove-btn">
+                        🗑 Delete
+                    </button>
                 </div>
             </div>
         `;
