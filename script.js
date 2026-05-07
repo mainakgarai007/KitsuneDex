@@ -429,7 +429,7 @@ function renderList() {
             <button data-action="details" data-id="${anime.id}">Details</button>
             <button data-action="episode" data-id="${anime.id}">+ Episode</button>
             <button class="heart-btn" data-action="favorite" data-id="${anime.id}" aria-label="${anime.favorite ? 'Unfavorite anime' : 'Favorite anime'}">${anime.favorite ? '❤️' : '🤍'}</button>
-            <button data-action="notes" data-id="${anime.id}" aria-label="Edit note: ${safeNotes}" title="${safeNotes}">Edit Note</button>
+            <button data-action="notes" data-id="${anime.id}" aria-label="Edit note for ${safeTitle}" title="${safeNotes}">Edit Note</button>
             <button data-action="delete" data-id="${anime.id}">Remove</button>
           </div>
         </div>
@@ -487,6 +487,7 @@ function bindEvents() {
 
   document.getElementById('searchBtn')?.addEventListener('click', () => {
     clickSound();
+    clearTimeout(appState.searchDebounceTimer);
     appState.search = document.getElementById('searchInput').value.trim();
     renderTrending();
     renderList();
