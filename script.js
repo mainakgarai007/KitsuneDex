@@ -28,14 +28,20 @@ function normalizeAnimeData(saved){
        status:'Watching',
        progress:0,
        total:12,
-       favorite:false
+       favorite:false,
+       season:1,
+       image:''
       };
    }
+
    return {
-    progress:anime.progress || 0,
-    total:anime.total || 12,
+    title:anime.title || 'Unknown Anime',
+    status:anime.status || 'Watching',
+    progress:Number(anime.progress) || 0,
+    total:Number(anime.total) || 12,
     favorite:anime.favorite || false,
-    ...anime
+    season:Number(anime.season) || 1,
+    image:anime.image || ''
    };
  });
 }
@@ -64,47 +70,77 @@ async function searchAnime(){
  animeResults.innerHTML = '<div class="loading">Loading...</div>';
 
  try{
+
   const response = await fetch(`https://api.jikan.moe/v4/anime?q=${query}`);
   const data = await response.json();
 
   animeResults.innerHTML = '';
 
+  if(!data.data || data.data.length === 0){
+   animeResults.innerHTML = '<div class="empty-state">No anime found 😭</div>';
+   return;
+  }
+
   data.data.forEach(anime=>{
+
    animeCache[anime.mal_id] = anime;
 
    animeResults.innerHTML += `
    <div class="card">
     <img src="${anime.images.jpg.image_url}" alt="anime">
+
     <div class="card-content">
       <h2>${anime.title}</h2>
+
       <p>⭐ ${anime.score || 'N/A'}</p>
+
       <p class="status">${anime.status}</p>
+
+      <p class="anime-info">📺 Episodes: ${anime.episodes || '?'}</p>
+
       <div class="button-group">
+
        <button onclick="openModal(${anime.mal_id})">Details</button>
-       <button onclick="saveAnime('${anime.title.replace(/'/g,'')}','Watching')">Watching</button>
-       <button onclick="saveAnime('${anime.title.replace(/'/g,'')}','Completed')">✔ Done</button>
+
+       <button onclick="saveAnime('${anime.title.replace(/'/g,'')}','Watching','${anime.images.jpg.image_url}',${anime.episodes || 12})">Watching</button>
+
+       <button onclick="saveAnime('${anime.title.replace(/'/g,'')}','Completed','${anime.images.jpg.image_url}',${anime.episodes || 12})">✔ Done</button>
+
       </div>
     </div>
    </div>`;
   });
- }catch{
+
+ }catch(error){
+
    animeResults.innerHTML = '<div class="empty-state">API Error 😭</div>';
  }
 }
 
-function saveAnime(title,status){
+function saveAnime(title,status,image,totalEpisodes){
+
  let saved = normalizeAnimeData(JSON.parse(localStorage.getItem('animeList')) || []);
+
  const existing = saved.find(a=>a.title===title);
 
  if(existing){
+
    existing.status = status;
+
+   if(image) existing.image = image;
+
+   if(totalEpisodes) existing.total = totalEpisodes;
+
  }else{
+
    saved.push({
     title,
     status,
-    progress:0,
-    total:12,
-    favorite:false
+    progress: status === 'Completed' ? totalEpisodes : 0,
+    total: totalEpisodes || 12,
+    favorite:false,
+    season:1,
+    image:image || ''
    });
  }
 
@@ -114,36 +150,67 @@ function saveAnime(title,status){
 }
 
 function toggleFavorite(title){
+
  let saved = normalizeAnimeData(JSON.parse(localStorage.getItem('animeList')) || []);
+
  const anime = saved.find(a=>a.title===title);
+
  if(anime){
-   anime.favorite = !anime.favorite;
+  anime.favorite = !anime.favorite;
  }
+
  saveLocalAnime(saved);
  loadSavedAnime();
 }
 
 function updateProgress(title){
+
  let saved = normalizeAnimeData(JSON.parse(localStorage.getItem('animeList')) || []);
+
  const anime = saved.find(a=>a.title===title);
- if(anime && anime.progress < anime.total){
+
+ if(!anime) return;
+
+ if(anime.progress < anime.total){
+
    anime.progress++;
+
+   anime.status = 'Watching';
  }
+
+ if(anime.progress >= anime.total){
+
+   anime.progress = anime.total;
+
+   anime.status = 'Completed';
+
+   showToast(`${title} season completed 😭🔥`);
+
+ }else{
+
+   showToast(`${title} episode ${anime.progress} completed 📺`);
+ }
+
  saveLocalAnime(saved);
  loadSavedAnime();
- showToast(`${title} episode updated 📺`);
 }
 
 function deleteAnime(title){
+
  let saved = normalizeAnimeData(JSON.parse(localStorage.getItem('animeList')) || []);
+
  saved = saved.filter(a=>a.title!==title);
+
  saveLocalAnime(saved);
  loadSavedAnime();
+
  showToast(`${title} deleted 🗑️`);
 }
 
 function openModal(id){
+
  const anime = animeCache[id];
+
  if(!anime) return;
 
  document.getElementById('animeModal').style.display = 'block';
@@ -161,7 +228,9 @@ function closeModal(){
 }
 
 function loadSavedAnime(){
+
  const savedAnime = document.getElementById('savedAnime');
+
  let saved = normalizeAnimeData(JSON.parse(localStorage.getItem('animeList')) || []);
 
  savedAnime.innerHTML = '';
@@ -172,27 +241,47 @@ function loadSavedAnime(){
  }
 
  saved.forEach(anime=>{
-   const progressPercent = Math.floor((anime.progress / anime.total) * 100);
+
+   const safeProgress = Math.min(anime.progress,anime.total);
+
+   const progressPercent = Math.floor((safeProgress / anime.total) * 100);
+
    const badge = anime.status === 'Completed' ? 'completed-badge' : 'watching-badge';
 
    savedAnime.innerHTML += `
+
    <div class="saved-item">
+
+      ${anime.image ? `<img src="${anime.image}" style="width:100%;height:180px;object-fit:cover;border-radius:18px;margin-bottom:14px">` : ''}
+
       <div class="list-top">
+
         <h3>${anime.favorite ? '❤️' : '📺'} ${anime.title}</h3>
+
         <span class="${badge}">${anime.status}</span>
+
       </div>
 
-      <p class="anime-info">Season 1 • Episode ${anime.progress}/${anime.total}</p>
+      <p class="anime-info">🎬 Season ${anime.season}</p>
+
+      <p class="anime-info">📺 Episode ${safeProgress}/${anime.total}</p>
 
       <div style="background:#0f172a;border-radius:999px;height:10px;overflow:hidden;margin:12px 0">
+
        <div style="width:${progressPercent}%;height:100%;background:#3b82f6"></div>
+
       </div>
 
       <div class="list-buttons" style="gap:10px;flex-wrap:wrap;justify-content:flex-start">
+
         <button onclick="updateProgress('${anime.title.replace(/'/g,'')}')">+ Episode</button>
-        <button onclick="toggleFavorite('${anime.title.replace(/'/g,'')}')">${anime.favorite ? '💔 Remove Favorite' : '❤️ Favorite'}</button>
+
+        <button onclick="toggleFavorite('${anime.title.replace(/'/g,'')}')">${anime.favorite ? '💔 Favorite' : '❤️ Favorite'}</button>
+
         <button onclick="deleteAnime('${anime.title.replace(/'/g,'')}')" class="remove-btn">🗑 Delete</button>
+
       </div>
+
    </div>`;
  });
 }
