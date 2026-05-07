@@ -2,10 +2,14 @@
     box-sizing:border-box;
 }
 
+html{
+    scroll-behavior:smooth;
+}
+
 body{
     margin:0;
     font-family:Arial,sans-serif;
-    background:linear-gradient(180deg,#050816,#071127,#050816);
+    background:radial-gradient(circle at top,#0f1c4d,#050816 60%);
     color:white;
     overflow-x:hidden;
 }
@@ -24,86 +28,101 @@ body{
 
 header{
     text-align:center;
-    padding:25px 15px;
-    background:linear-gradient(180deg,#091224,#111827);
-    box-shadow:0 0 25px rgba(0,0,0,0.6);
+    padding:35px 18px;
+    background:linear-gradient(180deg,#091224,#0b1120);
+    box-shadow:0 0 40px rgba(37,99,235,0.15);
+    border-bottom:1px solid rgba(255,255,255,0.06);
 }
 
 .logo{
-    width:180px;
+    width:190px;
     max-width:80%;
+    filter:drop-shadow(0 0 18px rgba(59,130,246,.35));
 }
 
 header h1{
-    margin:10px 0 5px;
+    margin:16px 0 5px;
     color:#60a5fa;
-    font-size:42px;
+    font-size:48px;
+    text-shadow:0 0 20px rgba(59,130,246,.45);
 }
 
 header p{
     color:#d1d5db;
-    font-size:18px;
+    font-size:20px;
 }
 
 .top-buttons{
     display:flex;
     justify-content:center;
-    gap:15px;
-    margin-top:20px;
+    gap:16px;
+    margin-top:28px;
 }
 
 .top-buttons button{
-    padding:14px 24px;
+    padding:16px 28px;
     border:none;
-    border-radius:18px;
-    background:linear-gradient(135deg,#60a5fa,#2563eb);
+    border-radius:20px;
+    background:linear-gradient(135deg,#3b82f6,#7c3aed);
     color:white;
     font-weight:bold;
-    box-shadow:0 5px 20px rgba(37,99,235,0.3);
+    box-shadow:0 0 25px rgba(59,130,246,0.45);
+    transition:.25s;
+}
+
+.top-buttons button:active{
+    transform:scale(.96);
 }
 
 .search-box{
     display:flex;
-    gap:10px;
-    margin:25px 15px;
+    gap:12px;
+    margin:28px 16px;
 }
 
 input{
     flex:1;
-    padding:15px;
+    padding:18px;
     border:none;
-    border-radius:18px;
-    font-size:16px;
+    border-radius:20px;
+    font-size:17px;
     background:#f3f4f6;
+    box-shadow:0 0 25px rgba(255,255,255,.05);
 }
 
 button{
-    padding:14px 18px;
+    padding:15px 22px;
     border:none;
-    border-radius:16px;
-    background:#58a6ff;
+    border-radius:18px;
+    background:linear-gradient(135deg,#3b82f6,#7c3aed);
     color:white;
     cursor:pointer;
     font-weight:bold;
+    transition:.25s;
+}
+
+button:active{
+    transform:scale(.96);
 }
 
 .quick-section,
 .saved-section{
-    padding:15px;
+    padding:18px;
 }
 
 .quick-section h2,
 .saved-section h2{
     color:#60a5fa;
-    font-size:38px;
-    margin-bottom:20px;
+    font-size:42px;
+    margin-bottom:22px;
+    text-shadow:0 0 18px rgba(59,130,246,.3);
 }
 
 .quick-buttons{
     display:flex;
-    gap:16px;
+    gap:18px;
     overflow-x:auto;
-    padding-bottom:10px;
+    padding-bottom:14px;
     scrollbar-width:none;
 }
 
@@ -112,45 +131,56 @@ button{
 }
 
 .trending-card{
-    min-width:160px;
-    background:#111827;
-    border-radius:22px;
+    min-width:180px;
+    background:linear-gradient(145deg,#111827,#0f172a);
+    border-radius:28px;
     overflow:hidden;
-    border:1px solid #1f2937;
-    box-shadow:0 0 20px rgba(0,0,0,0.3);
+    border:1px solid rgba(255,255,255,.08);
+    box-shadow:0 0 28px rgba(0,0,0,0.45);
+    transition:.3s;
+}
+
+.trending-card:hover{
+    transform:translateY(-5px);
+    box-shadow:0 0 30px rgba(59,130,246,.28);
 }
 
 .trending-card img{
     width:100%;
-    height:210px;
+    height:240px;
     object-fit:cover;
 }
 
 .trending-card h3{
-    padding:12px;
+    padding:14px;
     margin:0;
-    font-size:16px;
+    font-size:18px;
     text-align:center;
 }
 
 #savedAnime{
     display:flex;
     flex-direction:column;
-    gap:18px;
+    gap:22px;
 }
 
 .saved-item{
     background:linear-gradient(145deg,#111827,#1e293b);
-    padding:20px;
-    border-radius:24px;
-    border:1px solid #334155;
-    box-shadow:0 0 25px rgba(0,0,0,0.3);
+    padding:18px;
+    border-radius:28px;
+    border:1px solid rgba(255,255,255,.08);
+    box-shadow:0 0 30px rgba(0,0,0,0.35);
+    transition:.3s;
+}
+
+.saved-item:hover{
+    transform:translateY(-4px);
 }
 
 .saved-item h3{
-    margin:0;
-    font-size:24px;
-    flex:1;
+    margin:10px 0;
+    font-size:30px;
+    line-height:1.2;
 }
 
 .list-top{
@@ -179,8 +209,14 @@ button{
 
 .list-buttons{
     display:flex;
-    justify-content:flex-end;
+    flex-wrap:wrap;
+    gap:10px;
     margin-top:16px;
+}
+
+.list-buttons button{
+    flex:1;
+    min-width:100px;
 }
 
 .remove-btn{
@@ -195,33 +231,39 @@ button{
 
 #animeResults{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-    gap:20px;
-    padding:15px;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:24px;
+    padding:18px;
 }
 
 .card{
-    background:#111827;
-    border-radius:24px;
+    background:linear-gradient(145deg,#111827,#0f172a);
+    border-radius:28px;
     overflow:hidden;
-    border:1px solid #1f2937;
+    border:1px solid rgba(255,255,255,.08);
     transition:0.3s;
-    box-shadow:0 0 20px rgba(0,0,0,0.3);
+    box-shadow:0 0 24px rgba(0,0,0,0.35);
+}
+
+.card:hover{
+    transform:translateY(-5px);
+    box-shadow:0 0 35px rgba(59,130,246,.25);
 }
 
 .card img{
     width:100%;
-    height:320px;
+    height:340px;
     object-fit:cover;
 }
 
 .card-content{
-    padding:18px;
+    padding:20px;
 }
 
 .card-content h2{
-    font-size:24px;
+    font-size:30px;
     margin-top:0;
+    line-height:1.2;
 }
 
 .status{
@@ -237,8 +279,8 @@ button{
 .button-group{
     display:flex;
     flex-direction:column;
-    gap:10px;
-    margin-top:15px;
+    gap:12px;
+    margin-top:18px;
 }
 
 .button-group button{
@@ -271,18 +313,20 @@ button{
     top:0;
     width:100%;
     height:100%;
-    background:rgba(0,0,0,0.85);
+    background:rgba(0,0,0,0.88);
     overflow:auto;
+    backdrop-filter:blur(10px);
 }
 
 .modal-content{
-    background:#111827;
+    background:linear-gradient(145deg,#111827,#0f172a);
     margin:30px auto;
-    padding:20px;
-    border-radius:24px;
+    padding:22px;
+    border-radius:28px;
     width:92%;
-    max-width:500px;
-    border:1px solid #334155;
+    max-width:520px;
+    border:1px solid rgba(255,255,255,.08);
+    box-shadow:0 0 40px rgba(59,130,246,.15);
 }
 
 .modal-content img{
@@ -305,12 +349,12 @@ button{
 @media(max-width:600px){
 
     header h1{
-        font-size:30px;
+        font-size:34px;
     }
 
     .quick-section h2,
     .saved-section h2{
-        font-size:28px;
+        font-size:30px;
     }
 
     .top-buttons{
@@ -318,7 +362,7 @@ button{
     }
 
     .trending-card{
-        min-width:140px;
+        min-width:155px;
     }
 
     #animeResults{
@@ -330,7 +374,7 @@ button{
         align-items:flex-start;
     }
 
-    .list-buttons{
-        justify-content:flex-start;
+    .saved-item h3{
+        font-size:24px;
     }
 }
