@@ -4,6 +4,10 @@ const notifySound = new Audio('sounds/notify.mp3');
 const buttonSound = new Audio('sounds/button.mp3');
 const adminSound = new Audio('sounds/admin.mp3');
 
+notifySound.volume = 0.8;
+buttonSound.volume = 0.35;
+adminSound.volume = 1;
+
 const languageDatabase = {
     "Naruto": ["Hindi", "Bengali"],
     "One Piece": ["Hindi", "Tamil"],
@@ -15,20 +19,60 @@ const languageDatabase = {
 
 function playNotifySound(){
     notifySound.currentTime = 0;
-    notifySound.play();
+    notifySound.play().catch(() => {});
 }
 
 function playButtonSound(){
     buttonSound.currentTime = 0;
-    buttonSound.play();
+    buttonSound.play().catch(() => {});
 }
 
 function playAdminSound(){
     adminSound.currentTime = 0;
-    adminSound.play();
+    adminSound.play().catch(() => {});
+}
+
+function showToast(message,type='normal'){
+
+    const oldToast = document.querySelector('.toast-notification');
+
+    if(oldToast){
+        oldToast.remove();
+    }
+
+    const toast = document.createElement('div');
+
+    toast.className = 'toast-notification';
+
+    toast.innerText = message;
+
+    toast.style.position = 'fixed';
+    toast.style.bottom = '20px';
+    toast.style.left = '50%';
+    toast.style.transform = 'translateX(-50%)';
+    toast.style.background = '#2563eb';
+    toast.style.color = 'white';
+    toast.style.padding = '14px 22px';
+    toast.style.borderRadius = '18px';
+    toast.style.zIndex = '9999';
+    toast.style.boxShadow = '0 0 25px rgba(37,99,235,0.5)';
+    toast.style.fontWeight = 'bold';
+
+    document.body.appendChild(toast);
+
+    if(type === 'admin'){
+        playAdminSound();
+    }else{
+        playNotifySound();
+    }
+
+    setTimeout(() => {
+        toast.remove();
+    },2500);
 }
 
 function showHome(){
+
     playButtonSound();
 
     document.getElementById("homePage").classList.remove("hidden");
@@ -43,8 +87,6 @@ function showMyList(){
     document.getElementById("myListPage").classList.remove("hidden");
 
     loadSavedAnime();
-
-    playNotifySound();
 }
 
 function getLanguageTags(title){
@@ -86,65 +128,74 @@ async function searchAnime() {
     document.getElementById("loading").classList.remove("hidden");
     document.getElementById("emptyState").classList.add("hidden");
 
-    const response = await fetch(`https://api.jikan.moe/v4/anime?q=${query}`);
+    try{
 
-    const data = await response.json();
+        const response = await fetch(`https://api.jikan.moe/v4/anime?q=${query}`);
 
-    document.getElementById("loading").classList.add("hidden");
+        const data = await response.json();
 
-    const animeResults = document.getElementById("animeResults");
+        document.getElementById("loading").classList.add("hidden");
 
-    animeResults.innerHTML = "";
+        const animeResults = document.getElementById("animeResults");
 
-    animeCache = {};
+        animeResults.innerHTML = "";
 
-    if(!data.data || data.data.length === 0){
-        document.getElementById("emptyState").classList.remove("hidden");
-        return;
-    }
+        animeCache = {};
 
-    playNotifySound();
+        if(!data.data || data.data.length === 0){
+            document.getElementById("emptyState").classList.remove("hidden");
+            return;
+        }
 
-    data.data.forEach(anime => {
+        showToast('Anime results loaded 😭🔥');
 
-        animeCache[anime.mal_id] = anime;
+        data.data.forEach(anime => {
 
-        animeResults.innerHTML += `
-            <div class="card">
-                <img src="${anime.images.jpg.image_url}" alt="anime">
+            animeCache[anime.mal_id] = anime;
 
-                <div class="card-content">
-                    <h2>${anime.title}</h2>
+            animeResults.innerHTML += `
+                <div class="card">
+                    <img src="${anime.images.jpg.image_url}" alt="anime">
 
-                    <p>⭐ ${anime.score || "N/A"}</p>
+                    <div class="card-content">
+                        <h2>${anime.title}</h2>
 
-                    <p class="status">${anime.status}</p>
+                        <p>⭐ ${anime.score || "N/A"}</p>
 
-                    <p class="anime-info">📺 Episodes: ${anime.episodes || "?"}</p>
+                        <p class="status">${anime.status}</p>
 
-                    <p class="anime-info">🎬 Type: ${anime.type || "Unknown"}</p>
+                        <p class="anime-info">📺 Episodes: ${anime.episodes || "?"}</p>
 
-                    ${getLanguageTags(anime.title)}
+                        <p class="anime-info">🎬 Type: ${anime.type || "Unknown"}</p>
 
-                    <div class="button-group">
+                        ${getLanguageTags(anime.title)}
 
-                        <button onclick="openModal(${anime.mal_id})">
-                            Details
-                        </button>
+                        <div class="button-group">
 
-                        <button onclick="saveAnime('${anime.title.replace(/'/g, "") }','Watching')">
-                            Watching
-                        </button>
+                            <button onclick="openModal(${anime.mal_id})">
+                                Details
+                            </button>
 
-                        <button onclick="saveAnime('${anime.title.replace(/'/g, "") }','Completed')">
-                            ✔ Done
-                        </button>
+                            <button onclick="saveAnime('${anime.title.replace(/'/g, "") }','Watching')">
+                                Watching
+                            </button>
 
+                            <button onclick="saveAnime('${anime.title.replace(/'/g, "") }','Completed')">
+                                ✔ Done
+                            </button>
+
+                        </div>
                     </div>
                 </div>
-            </div>
-        `;
-    });
+            `;
+        });
+
+    }catch(error){
+
+        document.getElementById("loading").classList.add("hidden");
+
+        showToast('API error 😭');
+    }
 }
 
 function openModal(id){
@@ -154,8 +205,6 @@ function openModal(id){
     const anime = animeCache[id];
 
     if(!anime) return;
-
-    playNotifySound();
 
     document.getElementById("animeModal").style.display = "block";
 
@@ -177,7 +226,9 @@ function openModal(id){
 }
 
 function closeModal(){
+
     playButtonSound();
+
     document.getElementById("animeModal").style.display = "none";
 }
 
@@ -193,7 +244,6 @@ window.onclick = function(event){
 function saveAnime(title,status){
 
     playButtonSound();
-    playNotifySound();
 
     let saved = JSON.parse(localStorage.getItem("animeList")) || [];
 
@@ -208,6 +258,8 @@ function saveAnime(title,status){
     localStorage.setItem("animeList", JSON.stringify(saved));
 
     loadSavedAnime();
+
+    showToast(`${title} added to ${status}`);
 }
 
 function loadSavedAnime(){
