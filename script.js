@@ -1,30 +1,20 @@
 let animeCache = {};
 
 const notifySound = new Audio('sounds/notify.mp3');
-const buttonSound = new Audio('sounds/button.mp3');
 const adminSound = new Audio('sounds/admin.mp3');
 
 notifySound.volume = 0.8;
-buttonSound.volume = 0.35;
 adminSound.volume = 1;
 
 const languageDatabase = {
     "Naruto": ["Hindi", "Bengali"],
     "One Piece": ["Hindi", "Tamil"],
-    "Solo Leveling": ["Hindi", "Bengali"],
-    "Bleach": ["Hindi"],
-    "Jujutsu Kaisen": ["Hindi", "Tamil"],
-    "Kimetsu no Yaiba": ["Hindi", "Bengali"]
+    "Solo Leveling": ["Hindi", "Bengali"]
 };
 
 function playNotifySound(){
     notifySound.currentTime = 0;
     notifySound.play().catch(() => {});
-}
-
-function playButtonSound(){
-    buttonSound.currentTime = 0;
-    buttonSound.play().catch(() => {});
 }
 
 function playAdminSound(){
@@ -71,17 +61,31 @@ function showToast(message,type='normal'){
     },2500);
 }
 
+async function sendBrowserNotification(title,body){
+
+    if(!('Notification' in window)) return;
+
+    if(Notification.permission === 'default'){
+        await Notification.requestPermission();
+    }
+
+    if(Notification.permission === 'granted'){
+
+        new Notification(title,{
+            body: body,
+            icon: 'logo.png'
+        });
+
+        playNotifySound();
+    }
+}
+
 function showHome(){
-
-    playButtonSound();
-
     document.getElementById("homePage").classList.remove("hidden");
     document.getElementById("myListPage").classList.add("hidden");
 }
 
 function showMyList(){
-
-    playButtonSound();
 
     document.getElementById("homePage").classList.add("hidden");
     document.getElementById("myListPage").classList.remove("hidden");
@@ -106,18 +110,7 @@ function getLanguageTags(title){
     return tags;
 }
 
-function getCommunityLanguages(title){
-
-    if(!languageDatabase[title]) return "";
-
-    return languageDatabase[title]
-        .map(lang => `• ${lang}`)
-        .join("\n");
-}
-
 async function searchAnime() {
-
-    playButtonSound();
 
     showHome();
 
@@ -147,8 +140,6 @@ async function searchAnime() {
             return;
         }
 
-        showToast('Anime results loaded 😭🔥');
-
         data.data.forEach(anime => {
 
             animeCache[anime.mal_id] = anime;
@@ -176,11 +167,15 @@ async function searchAnime() {
                                 Details
                             </button>
 
-                            <button onclick="saveAnime('${anime.title.replace(/'/g, "") }','Watching')">
+                            <button onclick="subscribeAnime('${anime.title.replace(/'/g, "")}')">
+                                🔔 Subscribe
+                            </button>
+
+                            <button onclick="saveAnime('${anime.title.replace(/'/g, "")}','Watching')">
                                 Watching
                             </button>
 
-                            <button onclick="saveAnime('${anime.title.replace(/'/g, "") }','Completed')">
+                            <button onclick="saveAnime('${anime.title.replace(/'/g, "")}','Completed')">
                                 ✔ Done
                             </button>
 
@@ -198,9 +193,44 @@ async function searchAnime() {
     }
 }
 
-function openModal(id){
+function subscribeAnime(title){
 
-    playButtonSound();
+    let subscribed = JSON.parse(localStorage.getItem('subscribedAnime')) || [];
+
+    if(!subscribed.includes(title)){
+
+        subscribed.push(title);
+
+        localStorage.setItem('subscribedAnime',JSON.stringify(subscribed));
+
+        showToast(`${title} subscribed 🔔`);
+
+        sendBrowserNotification(
+            'KitsuneDex Subscription',
+            `${title} notifications enabled 😭🔥`
+        );
+    }
+}
+
+function simulateSeasonNotification(){
+
+    const subscribed = JSON.parse(localStorage.getItem('subscribedAnime')) || [];
+
+    if(subscribed.length === 0) return;
+
+    const anime = subscribed[Math.floor(Math.random() * subscribed.length)];
+
+    showToast(`${anime} new episode released 😭🔥`);
+
+    sendBrowserNotification(
+        'New Anime Episode!',
+        `${anime} released a new episode 😭🔥`
+    );
+}
+
+setInterval(simulateSeasonNotification,120000);
+
+function openModal(id){
 
     const anime = animeCache[id];
 
@@ -213,22 +243,9 @@ function openModal(id){
     document.getElementById("modalScore").innerText = `⭐ Rating: ${anime.score || "N/A"}`;
     document.getElementById("modalEpisodes").innerText = `📺 Episodes: ${anime.episodes || "Unknown"}`;
     document.getElementById("modalStatus").innerText = `🔥 Status: ${anime.status}`;
-
-    const genres = anime.genres.map(g => g.name).join(', ');
-
-    document.getElementById("modalGenres").innerText = `🎭 Genres: ${genres}`;
-
-    const extraLanguages = getCommunityLanguages(anime.title);
-
-    document.getElementById("modalSynopsis").innerText =
-        (anime.synopsis || "No synopsis available.") +
-        (extraLanguages ? `\n\n🌐 Community Languages:\n${extraLanguages}` : "");
 }
 
 function closeModal(){
-
-    playButtonSound();
-
     document.getElementById("animeModal").style.display = "none";
 }
 
@@ -242,8 +259,6 @@ window.onclick = function(event){
 }
 
 function saveAnime(title,status){
-
-    playButtonSound();
 
     let saved = JSON.parse(localStorage.getItem("animeList")) || [];
 
@@ -291,8 +306,6 @@ function loadSavedAnime(){
 }
 
 function quickSearch(name){
-
-    playButtonSound();
 
     document.getElementById("searchInput").value = name;
 
