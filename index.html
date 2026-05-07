@@ -1,243 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KitsuneDex</title>
-
-<link rel="stylesheet" href="style.css">
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KitsuneDex — Premium Anime Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
-<div class="container">
-
-<!-- HERO -->
-<div class="hero">
-
-<img src="logo.png" class="logo">
-
-<h1 class="title">KitsuneDex</h1>
-
-<p class="subtitle">
-Track Your Anime Universe
-</p>
-
-<div class="top-buttons">
-
-<button class="glow-btn">
-🏠 Home
-</button>
-
-<button class="glow-btn">
-📺 My List
-</button>
-
-</div>
-
-<div class="search-box">
-
-<input type="text" placeholder="Search Anime">
-
-<button>
-Search
-</button>
-
-</div>
-
-</div>
-
-<!-- TRENDING -->
-<div class="section-title">
-
-<span>🔥 Trending Anime</span>
-
-<span style="font-size:1rem;color:#60a5fa;">
-View All
-</span>
-
-</div>
-
-<div class="trending-grid">
-
-<div class="trend-card">
-
-<img src="https://cdn.myanimelist.net/images/anime/6/73245.jpg">
-
-<div class="trend-info">
-
-<h3>One Piece</h3>
-
-<div class="rating">
-⭐ 8.7
-</div>
-
-</div>
-
-</div>
-
-<div class="trend-card">
-
-<img src="https://cdn.myanimelist.net/images/anime/13/17405.jpg">
-
-<div class="trend-info">
-
-<h3>Naruto</h3>
-
-<div class="rating">
-⭐ 8.3
-</div>
-
-</div>
-
-</div>
-
-<div class="trend-card">
-
-<img src="https://cdn.myanimelist.net/images/anime/1286/99889.jpg">
-
-<div class="trend-info">
-
-<h3>Demon Slayer</h3>
-
-<div class="rating">
-⭐ 8.9
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- MY LIST -->
-<div class="section-title">
-
-<span>📺 My Anime List</span>
-
-</div>
-
-<!-- CARD -->
-<div class="anime-card">
-
-<img src="https://cdn.myanimelist.net/images/anime/13/17405.jpg">
-
-<div class="anime-content">
-
-<h2>Naruto</h2>
-
-<div class="status">
-Completed
-</div>
-
-<p>
-Episode 220 / 220
-</p>
-
-<div class="progress">
-
-<div class="progress-fill"></div>
-
-</div>
-
-<p>
-📝 note diyechi
-</p>
-
-<div class="card-buttons">
-
-<button class="small-btn">
-Details
-</button>
-
-<button class="small-btn">
-+ Episode
-</button>
-
-<button class="small-btn">
-❤️
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- CARD -->
-<div class="anime-card">
-
-<img src="https://cdn.myanimelist.net/images/anime/1286/99889.jpg">
-
-<div class="anime-content">
-
-<h2>Demon Slayer</h2>
-
-<div class="status">
-Watching
-</div>
-
-<p>
-Episode 15 / 26
-</p>
-
-<div class="progress">
-
-<div class="progress-fill" style="width:58%"></div>
-
-</div>
-
-<p>
-🔥 Swordsmith Arc
-</p>
-
-<div class="card-buttons">
-
-<button class="small-btn">
-Details
-</button>
-
-<button class="small-btn">
-+ Episode
-</button>
-
-<button class="small-btn">
-❤️
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- BOTTOM NAV -->
-<div class="bottom-nav">
-
-<div class="nav-item active">
-🏠<br>Home
-</div>
-
-<div class="nav-item">
-🧭<br>Explore
-</div>
-
-<div class="nav-item">
-📺<br>My List
-</div>
-
-<div class="nav-item">
-👤<br>Profile
-</div>
-
-</div>
-
-<script src="script.js"></script>
-
+  <div id="loadingScreen" class="loading-screen" aria-live="polite">
+    <div class="loading-ring"></div>
+    <p>KitsuneDex is powering up…</p>
+  </div>
+
+  <div class="bg-glow"></div>
+
+  <main class="app-shell" id="appShell">
+    <header class="hero" id="homeSection">
+      <img src="logo.png" class="logo" alt="KitsuneDex logo" />
+      <h1>KitsuneDex</h1>
+      <p>Track your anime universe with premium neon clarity.</p>
+
+      <div class="hero-actions">
+        <button id="homeBtn" class="btn gradient">🏠 Home</button>
+        <button id="myListBtn" class="btn gradient">📺 My List</button>
+      </div>
+
+      <div class="search-wrap">
+        <input id="searchInput" type="text" placeholder="Search anime by title…" aria-label="Search anime" />
+      </div>
+    </header>
+
+    <section class="section" id="trendingSection">
+      <div class="section-head">
+        <h2>🔥 Trending Anime</h2>
+      </div>
+      <div id="trendingRow" class="trending-row" aria-live="polite"></div>
+    </section>
+
+    <section class="section" id="listSection">
+      <div class="section-head list-head">
+        <h2>📺 My Anime List</h2>
+        <div class="tabs" id="statusTabs">
+          <button class="tab active" data-filter="All">All</button>
+          <button class="tab" data-filter="Watching">Watching</button>
+          <button class="tab" data-filter="Completed">Completed</button>
+          <button class="tab" data-filter="On Hold">On Hold</button>
+          <button class="tab" data-filter="Dropped">Dropped</button>
+        </div>
+      </div>
+      <div id="myListGrid" class="my-list-grid" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Mobile navigation">
+    <button class="nav-item active" data-nav="home">🏠<span>Home</span></button>
+    <button class="nav-item" data-nav="explore">🧭<span>Explore</span></button>
+    <button class="nav-item" data-nav="list">📺<span>My List</span></button>
+    <button class="nav-item" data-nav="profile">👤<span>Profile</span></button>
+  </nav>
+
+  <div id="detailsModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="detailsTitle">
+    <div class="modal-card">
+      <button id="closeModal" class="icon-btn close">✕</button>
+      <img id="detailsImage" alt="Anime poster" />
+      <div class="modal-content">
+        <h3 id="detailsTitle">Anime Title</h3>
+        <p id="detailsDescription" class="muted">Description</p>
+
+        <div class="details-grid">
+          <p><strong>Genre:</strong> <span id="detailsGenre"></span></p>
+          <p><strong>Rating:</strong> <span id="detailsRating"></span></p>
+          <p><strong>Episodes:</strong> <span id="detailsEpisodes"></span></p>
+          <p><strong>Seasons:</strong> <span id="detailsSeasons"></span></p>
+          <p><strong>Release Date:</strong> <span id="detailsReleaseDate"></span></p>
+          <p><strong>Next Season:</strong> <span id="detailsNextSeason"></span></p>
+          <p><strong>Status:</strong> <span id="detailsStatus"></span></p>
+          <p><strong>Current Watched Season:</strong> <span id="detailsCurrentSeason"></span></p>
+          <p><strong>Missing Seasons:</strong> <span id="detailsMissingSeasons"></span></p>
+          <p><strong>Episode Progress:</strong> <span id="detailsProgress"></span></p>
+          <p><strong>Countdown:</strong> <span id="detailsCountdown"></span></p>
+        </div>
+
+        <div class="progress" aria-label="Watch progress">
+          <div id="detailsProgressBar" class="progress-fill"></div>
+        </div>
+
+        <div class="modal-actions">
+          <button id="modalAddToList" class="btn gradient">Add / Update in My List</button>
+          <button id="modalCloseSecondary" class="btn subtle">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="notesModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="notesTitle">
+    <div class="popup-card">
+      <h3 id="notesTitle">Anime Notes</h3>
+      <textarea id="notesInput" rows="6" placeholder="Write your notes here..."></textarea>
+      <div class="popup-actions">
+        <button id="saveNotes" class="btn gradient">Save Notes</button>
+        <button id="cancelNotes" class="btn subtle">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="confirmModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <div class="popup-card">
+      <h3 id="confirmTitle">Delete Anime?</h3>
+      <p class="muted">This action cannot be undone.</p>
+      <div class="popup-actions">
+        <button id="confirmDelete" class="btn danger">Delete</button>
+        <button id="cancelDelete" class="btn subtle">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" aria-live="assertive"></div>
+
+  <audio id="clickAudio" preload="auto" src="sounds/button.mp3"></audio>
+  <audio id="notifyAudio" preload="auto" src="sounds/notify.mp3"></audio>
+
+  <script src="script.js"></script>
 </body>
 </html>
