@@ -4,8 +4,8 @@
 
 body{
     margin:0;
-    font-family:Arial, sans-serif;
-    background:#050816;
+    font-family:Arial,sans-serif;
+    background:linear-gradient(180deg,#050816,#071127,#050816);
     color:white;
     overflow-x:hidden;
 }
@@ -24,27 +24,19 @@ body{
 
 header{
     text-align:center;
-    padding:20px 15px;
+    padding:25px 15px;
     background:linear-gradient(180deg,#091224,#111827);
-    box-shadow:0 0 20px rgba(0,0,0,0.5);
-}
-
-.logo-box{
-    display:flex;
-    justify-content:center;
-    align-items:center;
+    box-shadow:0 0 25px rgba(0,0,0,0.6);
 }
 
 .logo{
-    width:240px;
-    max-width:85%;
-    height:auto;
-    display:block;
+    width:180px;
+    max-width:80%;
 }
 
 header h1{
-    margin:8px 0 5px;
-    color:#58a6ff;
+    margin:10px 0 5px;
+    color:#60a5fa;
     font-size:42px;
 }
 
@@ -53,36 +45,46 @@ header p{
     font-size:18px;
 }
 
-.search-box{
+.top-buttons{
     display:flex;
     justify-content:center;
+    gap:15px;
+    margin-top:20px;
+}
+
+.top-buttons button{
+    padding:14px 24px;
+    border:none;
+    border-radius:18px;
+    background:linear-gradient(135deg,#60a5fa,#2563eb);
+    color:white;
+    font-weight:bold;
+    box-shadow:0 5px 20px rgba(37,99,235,0.3);
+}
+
+.search-box{
+    display:flex;
     gap:10px;
     margin:25px 15px;
 }
 
 input{
+    flex:1;
     padding:15px;
-    width:100%;
-    max-width:400px;
     border:none;
-    border-radius:15px;
-    outline:none;
+    border-radius:18px;
     font-size:16px;
+    background:#f3f4f6;
 }
 
 button{
     padding:14px 18px;
     border:none;
-    border-radius:15px;
+    border-radius:16px;
     background:#58a6ff;
     color:white;
     cursor:pointer;
-    transition:0.3s;
     font-weight:bold;
-}
-
-button:hover{
-    background:#1f6feb;
 }
 
 .quick-section,
@@ -92,37 +94,58 @@ button:hover{
 
 .quick-section h2,
 .saved-section h2{
-    color:#58a6ff;
-    margin-bottom:15px;
+    color:#60a5fa;
+    font-size:38px;
+    margin-bottom:20px;
 }
 
-.quick-buttons,
-#savedAnime{
+.quick-buttons{
     display:flex;
-    gap:10px;
+    gap:16px;
     overflow-x:auto;
     padding-bottom:10px;
     scrollbar-width:none;
 }
 
-.quick-buttons::-webkit-scrollbar,
-#savedAnime::-webkit-scrollbar{
+.quick-buttons::-webkit-scrollbar{
     display:none;
 }
 
-.quick-buttons button,
-.saved-item{
-    white-space:nowrap;
+.trending-card{
+    min-width:160px;
+    background:#111827;
+    border-radius:22px;
+    overflow:hidden;
+    border:1px solid #1f2937;
+    box-shadow:0 0 20px rgba(0,0,0,0.3);
+}
+
+.trending-card img{
+    width:100%;
+    height:210px;
+    object-fit:cover;
+}
+
+.trending-card h3{
+    padding:12px;
+    margin:0;
+    font-size:16px;
+    text-align:center;
+}
+
+#savedAnime{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+    gap:15px;
 }
 
 .saved-item{
-    background:#161b22;
-    padding:12px 18px;
-    border-radius:12px;
-    border:1px solid #30363d;
-    max-width:100%;
-    overflow:hidden;
-    text-overflow:ellipsis;
+    background:linear-gradient(145deg,#111827,#1e293b);
+    padding:18px;
+    border-radius:20px;
+    border:1px solid #334155;
+    font-size:17px;
+    box-shadow:0 0 20px rgba(0,0,0,0.25);
 }
 
 #animeResults{
@@ -133,92 +156,52 @@ button:hover{
 }
 
 .card{
-    background:#161b22;
-    border-radius:20px;
+    background:#111827;
+    border-radius:24px;
     overflow:hidden;
-    border:1px solid #30363d;
+    border:1px solid #1f2937;
     transition:0.3s;
+    box-shadow:0 0 20px rgba(0,0,0,0.3);
 }
 
 .card:hover{
     transform:translateY(-5px);
-    box-shadow:0 0 20px rgba(88,166,255,0.25);
 }
 
 .card img{
     width:100%;
     height:320px;
     object-fit:cover;
-    display:block;
 }
 
 .card-content{
-    padding:15px;
+    padding:18px;
 }
 
 .card-content h2{
-    font-size:20px;
+    font-size:24px;
     margin-top:0;
 }
 
 .status{
-    color:#58a6ff;
+    color:#60a5fa;
     font-weight:bold;
 }
 
 .anime-info{
-    color:#c9d1d9;
+    color:#cbd5e1;
     font-size:14px;
 }
 
 .button-group{
     display:flex;
+    flex-direction:column;
     gap:10px;
     margin-top:15px;
 }
 
 .button-group button{
-    flex:1;
-}
-
-.modal{
-    display:none;
-    position:fixed;
-    z-index:1000;
-    left:0;
-    top:0;
     width:100%;
-    height:100%;
-    background:rgba(0,0,0,0.8);
-    overflow:auto;
-    padding:20px 0;
-}
-
-.modal-content{
-    background:#111827;
-    margin:auto;
-    padding:20px;
-    border-radius:20px;
-    width:92%;
-    max-width:500px;
-    position:relative;
-    border:1px solid #30363d;
-}
-
-.modal-content img{
-    width:100%;
-    border-radius:15px;
-    margin-bottom:15px;
-    display:block;
-}
-
-.close-btn{
-    position:absolute;
-    top:10px;
-    right:15px;
-    font-size:32px;
-    cursor:pointer;
-    color:white;
 }
 
 .language-tags{
@@ -229,50 +212,75 @@ button:hover{
 }
 
 .language-tags span{
-    background:#1f2937;
+    background:#1e293b;
     padding:8px 14px;
     border-radius:999px;
-    font-size:14px;
+    font-size:13px;
 }
 
 .multi{
     background:#2563eb !important;
 }
 
+.modal{
+    display:none;
+    position:fixed;
+    z-index:1000;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.85);
+    overflow:auto;
+}
+
+.modal-content{
+    background:#111827;
+    margin:30px auto;
+    padding:20px;
+    border-radius:24px;
+    width:92%;
+    max-width:500px;
+    border:1px solid #334155;
+}
+
+.modal-content img{
+    width:100%;
+    border-radius:20px;
+}
+
+.close-btn{
+    float:right;
+    font-size:34px;
+    cursor:pointer;
+}
+
 #modalSynopsis{
-    line-height:1.6;
+    line-height:1.7;
     color:#d1d5db;
     white-space:pre-line;
 }
 
 @media(max-width:600px){
 
-    .logo{
-        width:180px;
+    header h1{
+        font-size:30px;
     }
 
-    header h1{
+    .quick-section h2,
+    .saved-section h2{
         font-size:28px;
     }
 
-    header p{
-        font-size:15px;
+    .top-buttons{
+        flex-wrap:wrap;
     }
 
-    input{
-        font-size:14px;
-    }
-
-    button{
-        padding:12px 14px;
-        font-size:14px;
+    .trending-card{
+        min-width:140px;
     }
 
     #animeResults{
         grid-template-columns:1fr;
-    }
-
-    .button-group{
-        flex-direction:column;
     }
 }
