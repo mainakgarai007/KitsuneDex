@@ -417,7 +417,7 @@ function renderList() {
         <img class="list-thumb" src="${safeImageUrl(anime.image)}" alt="${safeTitle}" loading="lazy" />
         <div class="body list-main">
           <div class="row top-row">
-            <h3>${anime.favorite ? '❤️ ' : ''}${safeTitle}</h3>
+            <h3>${safeTitle}</h3>
             <button class="more-btn" data-action="status" data-id="${anime.id}" aria-label="Change status">⋮</button>
           </div>
           <span class="badge ${statusClass}">${anime.status}</span>
@@ -428,8 +428,8 @@ function renderList() {
           <div class="actions">
             <button data-action="details" data-id="${anime.id}">Details</button>
             <button data-action="episode" data-id="${anime.id}">+ Episode</button>
-            <button class="heart-btn" data-action="favorite" data-id="${anime.id}" aria-label="${anime.favorite ? 'Unfavorite anime' : 'Favorite anime'}">${anime.favorite ? '❤️' : '🤍'}<span class="sr-only">${anime.favorite ? 'Unfavorite' : 'Favorite'}</span></button>
-            <button data-action="notes" data-id="${anime.id}" aria-label="Edit note for ${safeTitle}" title="${safeNotes}">Edit Note</button>
+            <button class="heart-btn" data-action="favorite" data-id="${anime.id}" aria-label="${anime.favorite ? 'Unfavorite anime' : 'Favorite anime'}">${anime.favorite ? '❤️' : '🤍'}</button>
+            <button data-action="notes" data-id="${anime.id}" aria-label="Edit note" title="${safeNotes}">Edit Note</button>
             <button data-action="delete" data-id="${anime.id}">Remove</button>
           </div>
         </div>
