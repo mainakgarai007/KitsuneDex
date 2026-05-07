@@ -1,5 +1,8 @@
 let animeCache = {};
+
 const notifySound = new Audio('sounds/notify.mp3');
+const buttonSound = new Audio('sounds/button.mp3');
+const adminSound = new Audio('sounds/admin.mp3');
 
 const languageDatabase = {
     "Naruto": ["Hindi", "Bengali"],
@@ -15,15 +18,32 @@ function playNotifySound(){
     notifySound.play();
 }
 
+function playButtonSound(){
+    buttonSound.currentTime = 0;
+    buttonSound.play();
+}
+
+function playAdminSound(){
+    adminSound.currentTime = 0;
+    adminSound.play();
+}
+
 function showHome(){
+    playButtonSound();
+
     document.getElementById("homePage").classList.remove("hidden");
     document.getElementById("myListPage").classList.add("hidden");
 }
 
 function showMyList(){
+
+    playButtonSound();
+
     document.getElementById("homePage").classList.add("hidden");
     document.getElementById("myListPage").classList.remove("hidden");
+
     loadSavedAnime();
+
     playNotifySound();
 }
 
@@ -54,6 +74,8 @@ function getCommunityLanguages(title){
 }
 
 async function searchAnime() {
+
+    playButtonSound();
 
     showHome();
 
@@ -127,6 +149,8 @@ async function searchAnime() {
 
 function openModal(id){
 
+    playButtonSound();
+
     const anime = animeCache[id];
 
     if(!anime) return;
@@ -153,6 +177,7 @@ function openModal(id){
 }
 
 function closeModal(){
+    playButtonSound();
     document.getElementById("animeModal").style.display = "none";
 }
 
@@ -167,6 +192,7 @@ window.onclick = function(event){
 
 function saveAnime(title,status){
 
+    playButtonSound();
     playNotifySound();
 
     let saved = JSON.parse(localStorage.getItem("animeList")) || [];
@@ -213,6 +239,8 @@ function loadSavedAnime(){
 }
 
 function quickSearch(name){
+
+    playButtonSound();
 
     document.getElementById("searchInput").value = name;
 
