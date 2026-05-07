@@ -18,7 +18,6 @@ function getLanguageTags(title){
     `;
 
     if(languageDatabase[title]){
-
         tags += `<span class="multi">Multi ▼</span>`;
     }
 
@@ -29,9 +28,7 @@ function getLanguageTags(title){
 
 function getCommunityLanguages(title){
 
-    if(!languageDatabase[title]){
-        return "";
-    }
+    if(!languageDatabase[title]) return "";
 
     return languageDatabase[title]
         .map(lang => `• ${lang}`)
@@ -40,9 +37,12 @@ function getCommunityLanguages(title){
 
 async function searchAnime() {
 
-    const query = document.getElementById("searchInput").value;
+    const query = document.getElementById("searchInput").value.trim();
 
     if(!query) return;
+
+    document.getElementById("loading").classList.remove("hidden");
+    document.getElementById("emptyState").classList.add("hidden");
 
     const response = await fetch(
         `https://api.jikan.moe/v4/anime?q=${query}`
@@ -50,11 +50,18 @@ async function searchAnime() {
 
     const data = await response.json();
 
+    document.getElementById("loading").classList.add("hidden");
+
     const animeResults = document.getElementById("animeResults");
 
     animeResults.innerHTML = "";
 
     animeCache = {};
+
+    if(!data.data || data.data.length === 0){
+        document.getElementById("emptyState").classList.remove("hidden");
+        return;
+    }
 
     data.data.forEach(anime => {
 
@@ -69,9 +76,7 @@ async function searchAnime() {
 
                     <p>⭐ ${anime.score || "N/A"}</p>
 
-                    <p class="status">
-                        ${anime.status}
-                    </p>
+                    <p class="status">${anime.status}</p>
 
                     <p class="anime-info">
                         📺 Episodes: ${anime.episodes || "?"}
@@ -85,11 +90,15 @@ async function searchAnime() {
 
                     <div class="button-group">
                         <button onclick="openModal(${anime.mal_id})">
-                            View Details
+                            Details
                         </button>
 
                         <button onclick="saveAnime('${anime.title.replace(/'/g, "") }')">
-                            + Add
+                            Watching
+                        </button>
+
+                        <button onclick="markCompleted('${anime.title.replace(/'/g, "") }')">
+                            ✔ Done
                         </button>
                     </div>
                 </div>
@@ -107,13 +116,9 @@ function openModal(id){
     document.getElementById("animeModal").style.display = "block";
 
     document.getElementById("modalImage").src = anime.images.jpg.large_image_url;
-
     document.getElementById("modalTitle").innerText = anime.title;
-
     document.getElementById("modalScore").innerText = `⭐ Rating: ${anime.score || "N/A"}`;
-
     document.getElementById("modalEpisodes").innerText = `📺 Episodes: ${anime.episodes || "Unknown"}`;
-
     document.getElementById("modalStatus").innerText = `🔥 Status: ${anime.status}`;
 
     const genres = anime.genres.map(g => g.name).join(', ');
@@ -132,7 +137,6 @@ function closeModal(){
 }
 
 window.onclick = function(event){
-
     const modal = document.getElementById("animeModal");
 
     if(event.target == modal){
@@ -145,7 +149,6 @@ function saveAnime(title){
     let saved = JSON.parse(localStorage.getItem("animeList")) || [];
 
     if(!saved.includes(title)){
-
         saved.push(title);
 
         localStorage.setItem(
@@ -154,6 +157,23 @@ function saveAnime(title){
         );
 
         loadSavedAnime();
+    }
+}
+
+function markCompleted(title){
+
+    let completed = JSON.parse(localStorage.getItem("completedAnime")) || [];
+
+    if(!completed.includes(title)){
+
+        completed.push(title);
+
+        localStorage.setItem(
+            "completedAnime",
+            JSON.stringify(completed)
+        );
+
+        alert(title + ' marked completed!');
     }
 }
 
