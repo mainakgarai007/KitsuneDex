@@ -134,18 +134,60 @@ button{
 }
 
 #savedAnime{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
-    gap:15px;
+    display:flex;
+    flex-direction:column;
+    gap:18px;
 }
 
 .saved-item{
     background:linear-gradient(145deg,#111827,#1e293b);
-    padding:18px;
-    border-radius:20px;
+    padding:20px;
+    border-radius:24px;
     border:1px solid #334155;
-    font-size:17px;
-    box-shadow:0 0 20px rgba(0,0,0,0.25);
+    box-shadow:0 0 25px rgba(0,0,0,0.3);
+}
+
+.saved-item h3{
+    margin:0 0 15px;
+    font-size:24px;
+}
+
+.list-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.watching-badge,
+.completed-badge{
+    padding:8px 16px;
+    border-radius:999px;
+    font-size:14px;
+    font-weight:bold;
+}
+
+.watching-badge{
+    background:#2563eb;
+}
+
+.completed-badge{
+    background:#16a34a;
+}
+
+.list-buttons{
+    display:flex;
+    gap:10px;
+    margin-top:15px;
+}
+
+.list-buttons button{
+    flex:1;
+}
+
+.remove-btn{
+    background:#dc2626;
 }
 
 #animeResults{
@@ -162,10 +204,6 @@ button{
     border:1px solid #1f2937;
     transition:0.3s;
     box-shadow:0 0 20px rgba(0,0,0,0.3);
-}
-
-.card:hover{
-    transform:translateY(-5px);
 }
 
 .card img{
@@ -282,5 +320,9 @@ button{
 
     #animeResults{
         grid-template-columns:1fr;
+    }
+
+    .list-buttons{
+        flex-direction:column;
     }
 }
