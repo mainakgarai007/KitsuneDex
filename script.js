@@ -9,6 +9,16 @@ const languageDatabase = {
     "Kimetsu no Yaiba": ["Hindi", "Bengali"]
 };
 
+function showHome(){
+    document.getElementById("homePage").classList.remove("hidden");
+    document.getElementById("myListPage").classList.add("hidden");
+}
+
+function showMyList(){
+    document.getElementById("homePage").classList.add("hidden");
+    document.getElementById("myListPage").classList.remove("hidden");
+}
+
 function getLanguageTags(title){
 
     let tags = `
@@ -36,6 +46,8 @@ function getCommunityLanguages(title){
 }
 
 async function searchAnime() {
+
+    showHome();
 
     const query = document.getElementById("searchInput").value.trim();
 
@@ -172,8 +184,6 @@ function markCompleted(title){
             "completedAnime",
             JSON.stringify(completed)
         );
-
-        alert(title + ' marked completed!');
     }
 }
 
@@ -184,6 +194,11 @@ function loadSavedAnime(){
     const savedAnime = document.getElementById("savedAnime");
 
     savedAnime.innerHTML = "";
+
+    if(saved.length === 0){
+        savedAnime.innerHTML = `<p>No anime added yet 😭</p>`;
+        return;
+    }
 
     saved.forEach(title => {
 
