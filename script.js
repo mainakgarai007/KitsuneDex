@@ -1,4 +1,5 @@
 let animeCache = {};
+const notifySound = new Audio('sounds/notify.mp3');
 
 const languageDatabase = {
     "Naruto": ["Hindi", "Bengali"],
@@ -9,6 +10,11 @@ const languageDatabase = {
     "Kimetsu no Yaiba": ["Hindi", "Bengali"]
 };
 
+function playNotifySound(){
+    notifySound.currentTime = 0;
+    notifySound.play();
+}
+
 function showHome(){
     document.getElementById("homePage").classList.remove("hidden");
     document.getElementById("myListPage").classList.add("hidden");
@@ -18,6 +24,7 @@ function showMyList(){
     document.getElementById("homePage").classList.add("hidden");
     document.getElementById("myListPage").classList.remove("hidden");
     loadSavedAnime();
+    playNotifySound();
 }
 
 function getLanguageTags(title){
@@ -74,6 +81,8 @@ async function searchAnime() {
         return;
     }
 
+    playNotifySound();
+
     data.data.forEach(anime => {
 
         animeCache[anime.mal_id] = anime;
@@ -122,6 +131,8 @@ function openModal(id){
 
     if(!anime) return;
 
+    playNotifySound();
+
     document.getElementById("animeModal").style.display = "block";
 
     document.getElementById("modalImage").src = anime.images.jpg.large_image_url;
@@ -155,6 +166,8 @@ window.onclick = function(event){
 }
 
 function saveAnime(title,status){
+
+    playNotifySound();
 
     let saved = JSON.parse(localStorage.getItem("animeList")) || [];
 
@@ -190,7 +203,7 @@ function loadSavedAnime(){
 
         savedAnime.innerHTML += `
             <div class="saved-item">
-                <div>
+                <div class="list-top">
                     <h3>📺 ${anime.title}</h3>
                     <span class="${statusClass}">${anime.status}</span>
                 </div>
