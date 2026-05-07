@@ -1,4 +1,4 @@
-// KitsuneDex Phase 1 Optimization Update
+// KitsuneDex Phase 1.3 Update
 let animeCache = {};
 let searchTimeout;
 
@@ -52,6 +52,46 @@ function saveLocalAnime(saved){
 
 function sanitizeText(text=''){
  return text.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function renderStats(saved){
+ const stats=document.getElementById('animeStats');
+ if(!stats) return;
+
+ const completed=saved.filter(a=>a.status==='Completed').length;
+ const watching=saved.filter(a=>a.status==='Watching').length;
+ const favorites=saved.filter(a=>a.favorite).length;
+ const episodes=saved.reduce((sum,a)=>sum+a.progress,0);
+
+ stats.innerHTML=`
+ <div class="saved-item">
+  <h2>📊 Anime Stats</h2>
+  <p class="anime-info">✅ Completed: ${completed}</p>
+  <p class="anime-info">📺 Watching: ${watching}</p>
+  <p class="anime-info">❤️ Favorites: ${favorites}</p>
+  <p class="anime-info">🎬 Episodes Watched: ${episodes}</p>
+ </div>`;
+}
+
+function renderContinueWatching(saved){
+ const continueBox=document.getElementById('continueWatching');
+ if(!continueBox) return;
+
+ const watching=saved.filter(a=>a.status==='Watching');
+
+ continueBox.innerHTML='';
+
+ if(!watching.length) return;
+
+ continueBox.innerHTML='<h2 style="color:#60a5fa">Continue Watching</h2>';
+
+ watching.slice(0,5).forEach(anime=>{
+  continueBox.innerHTML+=`
+  <div class="saved-item" style="margin-bottom:12px">
+   <h3>📺 ${anime.title}</h3>
+   <p class="anime-info">Episode ${anime.progress}/${anime.total}</p>
+  </div>`;
+ });
 }
 
 function showHome(){
@@ -261,6 +301,9 @@ function loadSavedAnime(){
 
  savedAnime.innerHTML='';
 
+ renderStats(saved);
+ renderContinueWatching(saved);
+
  if(!saved.length){
   savedAnime.innerHTML='<p>No anime added yet 😭</p>';
   return;
@@ -309,4 +352,6 @@ function loadSavedAnime(){
  savedAnime.appendChild(fragment);
 }
 
-loadSavedAnime();
+window.addEventListener('DOMContentLoaded',()=>{
+ loadSavedAnime();
+});
