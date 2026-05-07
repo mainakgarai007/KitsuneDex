@@ -10,7 +10,7 @@
   --warning: #f59e0b;
   --danger: #ef4444;
   --radius: 20px;
-  --logo-size: clamp(96px, 32vw, 150px);
+  --logo-size: clamp(96px, 24vw, 150px);
 }
 
 * {
@@ -357,10 +357,22 @@ h1 {
 .badge {
   border-radius: 999px;
   padding: 0.3rem 0.8rem;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   width: max-content;
   margin-top: 0.55rem;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .badge.watching { background: rgba(77, 141, 255, 0.22); color: #a9c4ff; }

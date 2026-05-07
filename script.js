@@ -1,7 +1,7 @@
 'use strict';
 
 const STORAGE_KEY = 'kitsuneDexDataV1';
-const SEARCH_DEBOUNCE_MS = 180;
+const SEARCH_DEBOUNCE_MS = 200;
 const toast = document.getElementById('toast');
 const clickAudio = document.getElementById('clickAudio');
 const notifyAudio = document.getElementById('notifyAudio');
@@ -428,7 +428,7 @@ function renderList() {
           <div class="actions">
             <button data-action="details" data-id="${anime.id}">Details</button>
             <button data-action="episode" data-id="${anime.id}">+ Episode</button>
-            <button class="heart-btn" data-action="favorite" data-id="${anime.id}" aria-label="${anime.favorite ? 'Unfavorite anime' : 'Favorite anime'}">${anime.favorite ? '❤️' : '🤍'}</button>
+            <button class="heart-btn" data-action="favorite" data-id="${anime.id}" aria-label="${anime.favorite ? 'Unfavorite anime' : 'Favorite anime'}">${anime.favorite ? '❤️' : '🤍'}<span class="sr-only">${anime.favorite ? 'Unfavorite' : 'Favorite'}</span></button>
             <button data-action="notes" data-id="${anime.id}" aria-label="Edit note for ${safeTitle}" title="${safeNotes}">Edit Note</button>
             <button data-action="delete" data-id="${anime.id}">Remove</button>
           </div>
