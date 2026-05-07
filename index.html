@@ -19,9 +19,13 @@
 
   <main class="app-shell" id="appShell">
     <header class="hero" id="homeSection">
+      <div class="top-bar">
+        <button class="icon-btn top-icon" aria-label="Menu">☰</button>
+        <button class="icon-btn top-icon" aria-label="Search">⌕</button>
+      </div>
       <img src="logo.png" class="logo" alt="KitsuneDex logo" />
       <h1>KitsuneDex</h1>
-      <p>Track your anime universe with premium neon clarity.</p>
+      <p>Track Your Anime Universe</p>
 
       <div class="hero-actions">
         <button id="homeBtn" class="btn gradient">🏠 Home</button>
@@ -29,13 +33,15 @@
       </div>
 
       <div class="search-wrap">
-        <input id="searchInput" type="text" placeholder="Search anime by title…" aria-label="Search anime" />
+        <input id="searchInput" type="text" placeholder="One Piece" aria-label="Search anime" />
+        <button class="btn gradient search-btn">Search</button>
       </div>
     </header>
 
     <section class="section" id="trendingSection">
       <div class="section-head">
         <h2>🔥 Trending Anime</h2>
+        <button class="view-all">View All</button>
       </div>
       <div id="trendingRow" class="trending-row"></div>
     </section>
