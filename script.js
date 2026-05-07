@@ -1,5 +1,7 @@
-// KitsuneDex Phase 1 Stability Update
+// KitsuneDex Phase 1 Optimization Update
 let animeCache = {};
+let searchTimeout;
+
 const notifySound = new Audio('sounds/notify.mp3');
 notifySound.volume = 0.8;
 
@@ -9,22 +11,21 @@ function playNotifySound(){
 }
 
 function showToast(message){
- const oldToast=document.querySelector('.toast-notification');
- if(oldToast) oldToast.remove();
+ document.querySelector('.toast-notification')?.remove();
 
  const toast=document.createElement('div');
  toast.className='toast-notification';
- toast.innerText=message;
- toast.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#2563eb;color:white;padding:14px 22px;border-radius:18px;z-index:9999;font-weight:bold';
+ toast.textContent=message;
+ toast.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#2563eb;color:#fff;padding:14px 22px;border-radius:18px;z-index:9999;font-weight:bold;box-shadow:0 0 20px rgba(37,99,235,.4)';
  document.body.appendChild(toast);
 
  playNotifySound();
- setTimeout(()=>toast.remove(),2500);
+ setTimeout(()=>toast.remove(),2200);
 }
 
 function getSafeAnimeList(){
  try{
-  const raw=JSON.parse(localStorage.getItem('animeList')) || [];
+  const raw=JSON.parse(localStorage.getItem('animeList'));
   return Array.isArray(raw) ? raw : [];
  }catch{
   return [];
@@ -33,7 +34,7 @@ function getSafeAnimeList(){
 
 function normalizeAnimeData(saved){
  return saved.map(anime=>({
-  title:String(anime.title || anime || 'Unknown Anime'),
+  title:String(anime.title || anime || 'Unknown Anime').trim(),
   status:anime.status || 'Watching',
   progress:Math.max(0,Number(anime.progress)||0),
   total:Math.max(1,Number(anime.total)||12),
@@ -41,12 +42,16 @@ function normalizeAnimeData(saved){
   season:Math.max(1,Number(anime.season)||1),
   image:anime.image || 'https://placehold.co/600x400?text=Anime',
   nextSeason:anime.nextSeason || 'Coming Soon',
-  notes:anime.notes || ''
+  notes:(anime.notes || '').trim()
  }));
 }
 
 function saveLocalAnime(saved){
  localStorage.setItem('animeList',JSON.stringify(saved));
+}
+
+function sanitizeText(text=''){
+ return text.replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 function showHome(){
@@ -70,58 +75,71 @@ function quickSearch(name){
 }
 
 async function searchAnime(){
+ clearTimeout(searchTimeout);
+
+ searchTimeout=setTimeout(async()=>{
+
  showHome();
 
  const input=document.getElementById('searchInput');
- if(!input) return;
+ const animeResults=document.getElementById('animeResults');
+
+ if(!input || !animeResults) return;
 
  const query=input.value.trim();
  if(!query) return;
 
- const animeResults=document.getElementById('animeResults');
- animeResults.innerHTML='<div class="loading">Loading Anime...</div>';
+ animeResults.innerHTML='<div class="loading">Searching Anime...</div>';
 
  try{
-  const response=await fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}`);
-  const data=await response.json();
 
-  animeResults.innerHTML='';
+ const response=await fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}`);
+ const data=await response.json();
 
-  if(!data.data?.length){
-   animeResults.innerHTML='<div class="empty-state">No anime found 😭</div>';
-   return;
-  }
+ animeResults.innerHTML='';
 
-  const fragment=document.createDocumentFragment();
+ if(!data.data?.length){
+  animeResults.innerHTML='<div class="empty-state">No anime found 😭</div>';
+  return;
+ }
 
-  data.data.forEach(anime=>{
-   animeCache[anime.mal_id]=anime;
+ const fragment=document.createDocumentFragment();
 
-   const card=document.createElement('div');
-   card.className='card';
+ data.data.slice(0,12).forEach(anime=>{
 
-   card.innerHTML=`
-    <img src="${anime.images?.jpg?.large_image_url || 'https://placehold.co/600x400?text=Anime'}" alt="anime">
-    <div class="card-content">
-      <h2>${anime.title}</h2>
-      <p>⭐ ${anime.score || 'N/A'}</p>
-      <p class="status">${anime.status}</p>
-      <p class="anime-info">📺 Episodes: ${anime.episodes || '?'}</p>
-      <div class="button-group">
-        <button onclick="openModal(${anime.mal_id})">Details</button>
-        <button onclick="saveAnime('${anime.title.replace(/'/g,'')}','Watching','${anime.images?.jpg?.large_image_url || ''}',${anime.episodes || 12})">Watching</button>
-        <button onclick="saveAnime('${anime.title.replace(/'/g,'')}','Completed','${anime.images?.jpg?.large_image_url || ''}',${anime.episodes || 12})">✔ Done</button>
-      </div>
-    </div>`;
+  animeCache[anime.mal_id]=anime;
 
-   fragment.appendChild(card);
-  });
+  const card=document.createElement('div');
+  card.className='card';
 
-  animeResults.appendChild(fragment);
+  const safeTitle=sanitizeText(anime.title);
+  const safeImage=anime.images?.jpg?.large_image_url || 'https://placehold.co/600x400?text=Anime';
+
+  card.innerHTML=`
+   <img loading="lazy" src="${safeImage}" alt="anime">
+   <div class="card-content">
+    <h2>${safeTitle}</h2>
+    <p>⭐ ${anime.score || 'N/A'}</p>
+    <p class="status">${anime.status}</p>
+    <p class="anime-info">📺 Episodes: ${anime.episodes || '?'}</p>
+
+    <div class="button-group">
+     <button onclick="openModal(${anime.mal_id})">Details</button>
+     <button onclick="saveAnime('${safeTitle}','Watching','${safeImage}',${anime.episodes || 12})">Watching</button>
+     <button onclick="saveAnime('${safeTitle}','Completed','${safeImage}',${anime.episodes || 12})">✔ Done</button>
+    </div>
+   </div>`;
+
+  fragment.appendChild(card);
+ });
+
+ animeResults.appendChild(fragment);
 
  }catch{
   animeResults.innerHTML='<div class="empty-state">API Error 😭</div>';
  }
+
+ },250);
 }
 
 function saveAnime(title,status,image,totalEpisodes){
@@ -162,7 +180,7 @@ function updateProgress(title){
 
  saveLocalAnime(saved);
  loadSavedAnime();
- showToast(anime.status==='Completed' ? `${title} season completed 😭🔥` : `${title} progress updated 📺`);
+ showToast(anime.status==='Completed' ? `${title} completed 😭🔥` : `${title} progress updated 📺`);
 }
 
 function toggleFavorite(title){
@@ -190,7 +208,7 @@ function openNotes(title){
  const userNote=prompt(`Write notes for ${title}`,anime.notes || '');
 
  if(userNote!==null){
-  anime.notes=userNote.trim();
+  anime.notes=sanitizeText(userNote.trim());
   saveLocalAnime(saved);
   loadSavedAnime();
   showToast('Notes saved 😭🔥');
@@ -203,11 +221,11 @@ function openSavedAnimeDetails(title){
 
  document.getElementById('animeModal').style.display='block';
  document.getElementById('modalImage').src=anime.image;
- document.getElementById('modalTitle').innerText=anime.title;
- document.getElementById('modalScore').innerText='⭐ Saved Anime';
- document.getElementById('modalEpisodes').innerText=`📺 Episodes: ${anime.progress}/${anime.total}`;
- document.getElementById('modalStatus').innerText=`🔥 ${anime.status}`;
- document.getElementById('modalGenres').innerText=`🎬 Season ${anime.season}`;
+ document.getElementById('modalTitle').textContent=anime.title;
+ document.getElementById('modalScore').textContent='⭐ Saved Anime';
+ document.getElementById('modalEpisodes').textContent=`📺 Episodes: ${anime.progress}/${anime.total}`;
+ document.getElementById('modalStatus').textContent=`🔥 ${anime.status}`;
+ document.getElementById('modalGenres').textContent=`🎬 Season ${anime.season}`;
  document.getElementById('modalSynopsis').innerHTML=`⏳ Next Season: ${anime.nextSeason}<br><br>📝 Notes:<br>${anime.notes || 'No notes yet 😭'}`;
 }
 
@@ -217,12 +235,12 @@ function openModal(id){
 
  document.getElementById('animeModal').style.display='block';
  document.getElementById('modalImage').src=anime.images?.jpg?.large_image_url || '';
- document.getElementById('modalTitle').innerText=anime.title;
- document.getElementById('modalScore').innerText=`⭐ Rating: ${anime.score || 'N/A'}`;
- document.getElementById('modalEpisodes').innerText=`📺 Episodes: ${anime.episodes || '?'}`;
- document.getElementById('modalStatus').innerText=`🔥 ${anime.status}`;
- document.getElementById('modalGenres').innerText=`🎭 ${anime.genres?.map(g=>g.name).join(', ') || 'Unknown'}`;
- document.getElementById('modalSynopsis').innerHTML=`${anime.synopsis || 'No synopsis'}<br><br>📅 Release: ${anime.aired?.from?.split('T')[0] || 'Unknown'}`;
+ document.getElementById('modalTitle').textContent=anime.title;
+ document.getElementById('modalScore').textContent=`⭐ Rating: ${anime.score || 'N/A'}`;
+ document.getElementById('modalEpisodes').textContent=`📺 Episodes: ${anime.episodes || '?'}`;
+ document.getElementById('modalStatus').textContent=`🔥 ${anime.status}`;
+ document.getElementById('modalGenres').textContent=`🎭 ${anime.genres?.map(g=>g.name).join(', ') || 'Unknown'}`;
+ document.getElementById('modalSynopsis').innerHTML=`${sanitizeText(anime.synopsis || 'No synopsis')}<br><br>📅 Release: ${anime.aired?.from?.split('T')[0] || 'Unknown'}`;
 }
 
 function closeModal(){
@@ -230,12 +248,15 @@ function closeModal(){
 }
 
 window.onclick=function(event){
- const modal=document.getElementById('animeModal');
- if(event.target===modal) closeModal();
+ if(event.target===document.getElementById('animeModal')){
+  closeModal();
+ }
 }
 
 function loadSavedAnime(){
  const savedAnime=document.getElementById('savedAnime');
+ if(!savedAnime) return;
+
  let saved=normalizeAnimeData(getSafeAnimeList());
 
  savedAnime.innerHTML='';
@@ -250,6 +271,7 @@ function loadSavedAnime(){
  const fragment=document.createDocumentFragment();
 
  saved.forEach(anime=>{
+
   const safeProgress=Math.min(anime.progress,anime.total);
   const progressPercent=Math.floor((safeProgress/anime.total)*100);
   const badge=anime.status==='Completed' ? 'completed-badge' : 'watching-badge';
@@ -258,16 +280,21 @@ function loadSavedAnime(){
   card.className='saved-item';
 
   card.innerHTML=`
-   <img onclick="openSavedAnimeDetails('${anime.title.replace(/'/g,'')}')" src="${anime.image}" style="width:100%;height:200px;object-fit:cover;border-radius:18px;margin-bottom:14px;cursor:pointer">
+   <img loading="lazy" onclick="openSavedAnimeDetails('${anime.title.replace(/'/g,'')}')" src="${anime.image}" style="width:100%;height:200px;object-fit:cover;border-radius:18px;margin-bottom:14px;cursor:pointer">
+
    <div class="list-top">
     <h3>${anime.favorite ? '❤️' : '📺'} ${anime.title}</h3>
     <span class="${badge}">${anime.status}</span>
    </div>
+
    <p class="anime-info">📺 Episode ${safeProgress}/${anime.total} • ${progressPercent}%</p>
-   ${anime.notes ? `<p class="anime-info">📝 ${anime.notes.slice(0,40)}</p>` : ''}
+
+   ${anime.notes ? `<p class="anime-info">📝 ${anime.notes.slice(0,45)}</p>` : ''}
+
    <div style="background:#0f172a;border-radius:999px;height:10px;overflow:hidden;margin:12px 0">
-    <div style="width:${progressPercent}%;height:100%;background:#3b82f6"></div>
+    <div style="width:${progressPercent}%;height:100%;background:#3b82f6;transition:.4s"></div>
    </div>
+
    <div class="list-buttons" style="gap:8px;flex-wrap:wrap;justify-content:flex-start">
     <button onclick="openSavedAnimeDetails('${anime.title.replace(/'/g,'')}')">Details</button>
     <button onclick="openNotes('${anime.title.replace(/'/g,'')}')" style="padding:8px 12px;font-size:13px">📝 Note</button>
