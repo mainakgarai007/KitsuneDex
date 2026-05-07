@@ -423,13 +423,13 @@ function renderList() {
           <span class="badge ${statusClass}">${anime.status}</span>
           <p class="small">Episode ${anime.watchedEpisodes}/${anime.episodes}</p>
           <div class="progress"><div class="progress-fill" style="width:${progress}%"></div></div>
-          <p class="small list-note" tabindex="0" title="${safeNotes}">📝 ${safeNotes}</p>
+          <p class="small list-note" title="${safeNotes}">📝 ${safeNotes}</p>
 
           <div class="actions">
             <button data-action="details" data-id="${anime.id}">Details</button>
             <button data-action="episode" data-id="${anime.id}">+ Episode</button>
             <button class="heart-btn" data-action="favorite" data-id="${anime.id}" aria-label="${anime.favorite ? 'Unfavorite anime' : 'Favorite anime'}">${anime.favorite ? '❤️' : '🤍'}</button>
-            <button data-action="notes" data-id="${anime.id}">Edit Note</button>
+            <button data-action="notes" data-id="${anime.id}" aria-label="Edit note: ${safeNotes}" title="${safeNotes}">Edit Note</button>
             <button data-action="delete" data-id="${anime.id}">Remove</button>
           </div>
         </div>

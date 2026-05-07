@@ -10,6 +10,7 @@
   --warning: #f59e0b;
   --danger: #ef4444;
   --radius: 20px;
+  --logo-size: clamp(96px, 32vw, 150px);
 }
 
 * {
@@ -76,8 +77,8 @@ body {
 }
 
 .logo {
-  width: clamp(96px, 32vw, 150px);
-  height: clamp(96px, 32vw, 150px);
+  width: var(--logo-size);
+  height: var(--logo-size);
   object-fit: contain;
   border-radius: 0;
   box-shadow: none;
@@ -422,12 +423,6 @@ h1 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.list-note:focus-visible {
-  outline: 2px solid #4d8dff;
-  outline-offset: 2px;
-  border-radius: 6px;
 }
 
 .actions button:hover,
