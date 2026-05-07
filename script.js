@@ -1,6 +1,7 @@
 'use strict';
 
 const STORAGE_KEY = 'kitsuneDexDataV1';
+const SEARCH_DEBOUNCE_MS = 200;
 const toast = document.getElementById('toast');
 const clickAudio = document.getElementById('clickAudio');
 const notifyAudio = document.getElementById('notifyAudio');
@@ -8,6 +9,7 @@ const notifyAudio = document.getElementById('notifyAudio');
 const appState = {
   filter: 'All',
   search: '',
+  searchDebounceTimer: null,
   selectedAnimeId: null,
   notesAnimeId: null,
   deleteAnimeId: null,
@@ -412,23 +414,23 @@ function renderList() {
 
     return `
       <article class="list-card">
-        <img src="${safeImageUrl(anime.image)}" alt="${safeTitle}" loading="lazy" />
-        <div class="body">
-          <div class="row">
-            <h3>${anime.favorite ? '❤️ ' : ''}${safeTitle}</h3>
-            <span class="badge ${statusClass}">${anime.status}</span>
+        <img class="list-thumb" src="${safeImageUrl(anime.image)}" alt="${safeTitle}" loading="lazy" />
+        <div class="body list-main">
+          <div class="row top-row">
+            <h3>${safeTitle}</h3>
+            <button class="more-btn" data-action="status" data-id="${anime.id}" aria-label="Change status">⋮</button>
           </div>
+          <span class="badge ${statusClass}">${anime.status}</span>
           <p class="small">Episode ${anime.watchedEpisodes}/${anime.episodes}</p>
           <div class="progress"><div class="progress-fill" style="width:${progress}%"></div></div>
-          <p class="small">📝 ${safeNotes}</p>
+          <p class="small list-note" title="${safeNotes}">📝 ${safeNotes}</p>
 
           <div class="actions">
             <button data-action="details" data-id="${anime.id}">Details</button>
             <button data-action="episode" data-id="${anime.id}">+ Episode</button>
-            <button data-action="status" data-id="${anime.id}">Status</button>
-            <button data-action="favorite" data-id="${anime.id}">${anime.favorite ? '💜 Unfav' : '🤍 Favorite'}</button>
-            <button data-action="notes" data-id="${anime.id}">Notes</button>
-            <button data-action="delete" data-id="${anime.id}">Delete</button>
+            <button class="heart-btn" data-action="favorite" data-id="${anime.id}" aria-label="${anime.favorite ? 'Unfavorite anime' : 'Favorite anime'}">${anime.favorite ? '❤️' : '🤍'}</button>
+            <button data-action="notes" data-id="${anime.id}" aria-label="Edit note" title="${safeNotes}">Edit Note</button>
+            <button data-action="delete" data-id="${anime.id}">Remove</button>
           </div>
         </div>
       </article>
@@ -474,9 +476,31 @@ function bindEvents() {
   });
 
   document.getElementById('searchInput').addEventListener('input', (e) => {
-    appState.search = e.target.value.trim();
+    const value = e.target.value.trim();
+    clearTimeout(appState.searchDebounceTimer);
+    appState.searchDebounceTimer = setTimeout(() => {
+      appState.search = value;
+      renderTrending();
+      renderList();
+    }, SEARCH_DEBOUNCE_MS);
+  });
+
+  document.getElementById('searchBtn')?.addEventListener('click', () => {
+    clickSound();
+    clearTimeout(appState.searchDebounceTimer);
+    appState.search = document.getElementById('searchInput').value.trim();
     renderTrending();
     renderList();
+  });
+
+  document.getElementById('menuIconBtn')?.addEventListener('click', () => {
+    clickSound();
+    showToast('Menu coming soon');
+  });
+
+  document.getElementById('topSearchBtn')?.addEventListener('click', () => {
+    clickSound();
+    document.getElementById('searchInput').focus();
   });
 
   document.getElementById('statusTabs').addEventListener('click', (e) => {
