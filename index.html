@@ -1,106 +1,243 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>KitsuneDex</title>
-  <link rel="stylesheet" href="style.css"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KitsuneDex</title>
+
+<link rel="stylesheet" href="style.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 </head>
 <body>
 
-  <header>
-    <div class="logo-box">
-      <img src="logo.png" alt="KitsuneDex Logo" class="logo">
-    </div>
+<div class="container">
 
-    <h1>KitsuneDex</h1>
-    <p>Track Your Anime Universe</p>
+<!-- HERO -->
+<div class="hero">
 
-    <div class="top-buttons">
-      <button onclick="showHome()">🏠 Home</button>
-      <button onclick="showMyList()">📺 My List</button>
-    </div>
-  </header>
+<img src="logo.png" class="logo">
 
-  <main id="homePage">
+<h1 class="title">KitsuneDex</h1>
 
-    <section class="search-box">
-      <input type="text" id="searchInput" placeholder="Search anime..." />
-      <button onclick="searchAnime()">Search</button>
-    </section>
+<p class="subtitle">
+Track Your Anime Universe
+</p>
 
-    <div id="loading" class="loading hidden">
-      🦊 Searching anime...
-    </div>
+<div class="top-buttons">
 
-    <div id="emptyState" class="empty-state hidden">
-      No anime found 😭
-    </div>
+<button class="glow-btn">
+🏠 Home
+</button>
 
-    <section class="quick-section">
-      <h2>🔥 Trending Anime</h2>
+<button class="glow-btn">
+📺 My List
+</button>
 
-      <div class="quick-buttons">
+</div>
 
-        <div class="trending-card" onclick="quickSearch('One Piece')">
-          <img src="https://cdn.myanimelist.net/images/anime/6/73245.jpg" alt="One Piece">
-          <h3>One Piece</h3>
-        </div>
+<div class="search-box">
 
-        <div class="trending-card" onclick="quickSearch('Naruto')">
-          <img src="https://cdn.myanimelist.net/images/anime/13/17405.jpg" alt="Naruto">
-          <h3>Naruto</h3>
-        </div>
+<input type="text" placeholder="Search Anime">
 
-        <div class="trending-card" onclick="quickSearch('Solo Leveling')">
-          <img src="https://cdn.myanimelist.net/images/anime/1708/140805.jpg" alt="Solo Leveling">
-          <h3>Solo Leveling</h3>
-        </div>
+<button>
+Search
+</button>
 
-        <div class="trending-card" onclick="quickSearch('Bleach')">
-          <img src="https://cdn.myanimelist.net/images/anime/3/40451.jpg" alt="Bleach">
-          <h3>Bleach</h3>
-        </div>
+</div>
 
-      </div>
-    </section>
+</div>
 
-    <section id="animeResults"></section>
+<!-- TRENDING -->
+<div class="section-title">
 
-  </main>
+<span>🔥 Trending Anime</span>
 
-  <main id="myListPage" class="hidden">
+<span style="font-size:1rem;color:#60a5fa;">
+View All
+</span>
 
-    <section class="saved-section">
-      <h2>📺 My Anime List</h2>
-      <div id="savedAnime"></div>
-    </section>
+</div>
 
-  </main>
+<div class="trending-grid">
 
-  <div id="animeModal" class="modal">
-    <div class="modal-content">
-      <span class="close-btn" onclick="closeModal()">&times;</span>
+<div class="trend-card">
 
-      <img id="modalImage" src="" alt="anime">
+<img src="https://cdn.myanimelist.net/images/anime/6/73245.jpg">
 
-      <h2 id="modalTitle"></h2>
+<div class="trend-info">
 
-      <p id="modalScore"></p>
-      <p id="modalEpisodes"></p>
-      <p id="modalStatus"></p>
-      <p id="modalGenres"></p>
+<h3>One Piece</h3>
 
-      <div class="language-tags">
-        <span>English</span>
-        <span>Japanese</span>
-        <span class="multi">Multi ▼</span>
-      </div>
+<div class="rating">
+⭐ 8.7
+</div>
 
-      <p id="modalSynopsis"></p>
-    </div>
-  </div>
+</div>
 
-  <script src="script.js"></script>
+</div>
+
+<div class="trend-card">
+
+<img src="https://cdn.myanimelist.net/images/anime/13/17405.jpg">
+
+<div class="trend-info">
+
+<h3>Naruto</h3>
+
+<div class="rating">
+⭐ 8.3
+</div>
+
+</div>
+
+</div>
+
+<div class="trend-card">
+
+<img src="https://cdn.myanimelist.net/images/anime/1286/99889.jpg">
+
+<div class="trend-info">
+
+<h3>Demon Slayer</h3>
+
+<div class="rating">
+⭐ 8.9
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- MY LIST -->
+<div class="section-title">
+
+<span>📺 My Anime List</span>
+
+</div>
+
+<!-- CARD -->
+<div class="anime-card">
+
+<img src="https://cdn.myanimelist.net/images/anime/13/17405.jpg">
+
+<div class="anime-content">
+
+<h2>Naruto</h2>
+
+<div class="status">
+Completed
+</div>
+
+<p>
+Episode 220 / 220
+</p>
+
+<div class="progress">
+
+<div class="progress-fill"></div>
+
+</div>
+
+<p>
+📝 note diyechi
+</p>
+
+<div class="card-buttons">
+
+<button class="small-btn">
+Details
+</button>
+
+<button class="small-btn">
++ Episode
+</button>
+
+<button class="small-btn">
+❤️
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- CARD -->
+<div class="anime-card">
+
+<img src="https://cdn.myanimelist.net/images/anime/1286/99889.jpg">
+
+<div class="anime-content">
+
+<h2>Demon Slayer</h2>
+
+<div class="status">
+Watching
+</div>
+
+<p>
+Episode 15 / 26
+</p>
+
+<div class="progress">
+
+<div class="progress-fill" style="width:58%"></div>
+
+</div>
+
+<p>
+🔥 Swordsmith Arc
+</p>
+
+<div class="card-buttons">
+
+<button class="small-btn">
+Details
+</button>
+
+<button class="small-btn">
++ Episode
+</button>
+
+<button class="small-btn">
+❤️
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+
+<div class="nav-item active">
+🏠<br>Home
+</div>
+
+<div class="nav-item">
+🧭<br>Explore
+</div>
+
+<div class="nav-item">
+📺<br>My List
+</div>
+
+<div class="nav-item">
+👤<br>Profile
+</div>
+
+</div>
+
+<script src="script.js"></script>
+
 </body>
 </html>
