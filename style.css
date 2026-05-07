@@ -147,11 +147,12 @@ h1 {
   margin: 1rem auto 0;
   width: min(760px, 100%);
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 0.55rem;
 }
 
 #searchInput {
+  min-width: 0;
   width: 100%;
   padding: 0.95rem 1rem;
   border-radius: 22px;
