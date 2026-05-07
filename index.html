@@ -15,9 +15,14 @@
 
     <h1>KitsuneDex</h1>
     <p>Track Your Anime Universe</p>
+
+    <div class="top-buttons">
+      <button onclick="showHome()">🏠 Home</button>
+      <button onclick="showMyList()">📺 My List</button>
+    </div>
   </header>
 
-  <main>
+  <main id="homePage">
 
     <section class="search-box">
       <input type="text" id="searchInput" placeholder="Search anime..." />
@@ -44,12 +49,16 @@
       </div>
     </section>
 
+    <section id="animeResults"></section>
+
+  </main>
+
+  <main id="myListPage" class="hidden">
+
     <section class="saved-section">
       <h2>📺 My Anime List</h2>
       <div id="savedAnime"></div>
     </section>
-
-    <section id="animeResults"></section>
 
   </main>
 
