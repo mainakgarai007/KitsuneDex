@@ -20,8 +20,7 @@
   <main class="app-shell" id="appShell">
     <header class="hero" id="homeSection">
       <div class="top-bar">
-        <button id="menuIconBtn" class="icon-btn top-icon" aria-label="Menu">☰</button>
-        <button id="topSearchBtn" class="icon-btn top-icon" aria-label="Search">⌕</button>
+        <button id="topSearchBtn" class="icon-btn top-icon" aria-label="Focus search">⌕</button>
       </div>
       <img src="logo.png" class="logo" alt="KitsuneDex logo" />
       <h1>KitsuneDex</h1>
@@ -41,7 +40,6 @@
     <section class="section" id="trendingSection">
       <div class="section-head">
         <h2>🔥 Trending Anime</h2>
-        <button class="view-all" aria-label="View all trending anime">View All</button>
       </div>
       <div id="trendingRow" class="trending-row"></div>
     </section>
@@ -55,6 +53,7 @@
           <button class="tab" data-filter="Completed">Completed</button>
           <button class="tab" data-filter="On Hold">On Hold</button>
           <button class="tab" data-filter="Dropped">Dropped</button>
+          <button class="tab" data-filter="Favorites">Favorites</button>
         </div>
       </div>
       <div id="myListGrid" class="my-list-grid"></div>
@@ -69,34 +68,61 @@
   </nav>
 
   <div id="detailsModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="detailsTitle">
-    <div class="modal-card">
+    <div class="modal-card premium-modal">
       <button id="closeModal" class="icon-btn close">✕</button>
-      <img id="detailsImage" alt="Anime poster" />
-      <div class="modal-content">
-        <h3 id="detailsTitle">Anime Title</h3>
-        <p id="detailsDescription" class="muted">Description</p>
 
-        <div class="details-grid">
-          <p><strong>Genre:</strong> <span id="detailsGenre"></span></p>
-          <p><strong>Rating:</strong> <span id="detailsRating"></span></p>
-          <p><strong>Episodes:</strong> <span id="detailsEpisodes"></span></p>
-          <p><strong>Seasons:</strong> <span id="detailsSeasons"></span></p>
-          <p><strong>Release Date:</strong> <span id="detailsReleaseDate"></span></p>
-          <p><strong>Next Season:</strong> <span id="detailsNextSeason"></span></p>
-          <p><strong>Status:</strong> <span id="detailsStatus"></span></p>
-          <p><strong>Currently Watching Season:</strong> <span id="detailsCurrentSeason"></span></p>
-          <p><strong>Missing Seasons:</strong> <span id="detailsMissingSeasons"></span></p>
-          <p><strong>Episode Progress:</strong> <span id="detailsProgress"></span></p>
-          <p><strong>Countdown:</strong> <span id="detailsCountdown"></span></p>
-        </div>
+      <div class="modal-banner-wrap">
+        <img id="detailsBanner" class="modal-banner" alt="Anime banner" />
+      </div>
 
-        <div class="progress" aria-label="Watch progress">
-          <div id="detailsProgressBar" class="progress-fill"></div>
-        </div>
+      <div class="modal-main">
+        <img id="detailsImage" class="modal-poster" alt="Anime poster" />
+        <div class="modal-content">
+          <div class="modal-header-row">
+            <h3 id="detailsTitle">Anime Title</h3>
+            <button id="modalFavoriteToggle" class="icon-btn favorite-btn" aria-label="Toggle favorite">🤍</button>
+          </div>
+          <p id="detailsSummary" class="muted">Storyline summary</p>
 
-        <div class="modal-actions">
-          <button id="modalAddToList" class="btn gradient">Add / Update in My List</button>
-          <button id="modalCloseSecondary" class="btn subtle">Close</button>
+          <div class="details-grid">
+            <p><strong>Genres:</strong> <span id="detailsGenres"></span></p>
+            <p><strong>Rating:</strong> <span id="detailsRating"></span></p>
+            <p><strong>Studio:</strong> <span id="detailsStudio"></span></p>
+            <p><strong>Release Date:</strong> <span id="detailsReleaseDate"></span></p>
+            <p><strong>Total Seasons:</strong> <span id="detailsTotalSeasons"></span></p>
+            <p><strong>Watched Seasons:</strong> <span id="detailsWatchedSeasons"></span></p>
+            <p><strong>Missing Seasons:</strong> <span id="detailsMissingSeasons"></span></p>
+            <p><strong>Watched Episodes:</strong> <span id="detailsWatchedEpisodes"></span></p>
+            <p><strong>Remaining Episodes:</strong> <span id="detailsRemainingEpisodes"></span></p>
+            <p><strong>Next Release:</strong> <span id="detailsNextRelease"></span></p>
+            <p><strong>Countdown:</strong> <span id="detailsCountdown"></span></p>
+            <p><strong>Anime Status:</strong> <span id="detailsStatus"></span></p>
+          </div>
+
+          <div class="timeline-box">
+            <h4>Movie Timeline</h4>
+            <ul id="detailsMovieTimeline" class="timeline-list"></ul>
+          </div>
+
+          <div class="timeline-box">
+            <h4>Watch Progress</h4>
+            <p id="detailsProgressText" class="muted"></p>
+            <div class="progress" aria-label="Watch progress">
+              <div id="detailsProgressBar" class="progress-fill"></div>
+            </div>
+          </div>
+
+          <div class="timeline-box">
+            <h4>Notes</h4>
+            <p id="detailsNotesPreview" class="muted"></p>
+          </div>
+
+          <div class="modal-actions">
+            <button id="modalAddToList" class="btn gradient">Add / Update in My List</button>
+            <button id="modalIncEpisode" class="btn subtle">+ Episode</button>
+            <button id="modalOpenNotes" class="btn subtle">Edit Notes</button>
+            <button id="modalCloseSecondary" class="btn subtle">Close</button>
+          </div>
         </div>
       </div>
     </div>
