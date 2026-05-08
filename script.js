@@ -1,6 +1,7 @@
 'use strict';
 
 const STORAGE_KEY = 'kitsuneDexDataV2';
+const LEGACY_STORAGE_KEYS = ['kitsuneDexDataV1'];
 const SEARCH_DEBOUNCE_MS = 180;
 const FALLBACK_IMAGE = 'https://placehold.co/600x900/0b1226/e8eeff?text=KitsuneDex';
 
@@ -367,11 +368,17 @@ function normalizeListAnime(item) {
 
 function readStorage() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return;
-    const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed.list)) {
+    const candidateKeys = [STORAGE_KEY, ...LEGACY_STORAGE_KEYS];
+    for (const key of candidateKeys) {
+      const raw = localStorage.getItem(key);
+      if (!raw) continue;
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed.list)) continue;
       appState.data.list = parsed.list.map(normalizeListAnime).filter(Boolean);
+      if (key !== STORAGE_KEY) {
+        writeStorage();
+      }
+      return;
     }
   } catch (_err) {
     appState.data.list = [];
