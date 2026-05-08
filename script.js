@@ -341,7 +341,8 @@ function createListAnime(source, preferredStatus = 'Watching') {
     releaseDate: source.releaseDate || null,
     summary: source.summary || 'No storyline summary available.',
     watchedSeasons: [],
-    watchedMovies: []
+    watchedMovies: [],
+    currentMovieId: null
   };
 }
 
@@ -360,6 +361,7 @@ function normalizeListAnime(item) {
   merged.favorite = Boolean(merged.favorite);
   merged.watchedSeasons = Array.isArray(merged.watchedSeasons) ? merged.watchedSeasons : [];
   merged.watchedMovies = Array.isArray(merged.watchedMovies) ? merged.watchedMovies : [];
+  merged.currentMovieId = typeof merged.currentMovieId === 'string' ? merged.currentMovieId : null;
   return merged;
 }
 
@@ -421,11 +423,20 @@ function getTotalWatchedEpisodes(anime) {
 
 function getMovieState(anime, movie) {
   if (hasWatchedMovie(anime, movie.id)) return 'Completed';
+  if (anime.currentMovieId === movie.id) return 'Watching';
   if (!isReleased(movie.releaseDate)) return 'Coming Soon';
   return 'Released';
 }
 
 function getNextReleaseInfo(anime) {
+  if (anime.currentMovieId) {
+    const activeMovie = anime.movies.find((movie) => movie.id === anime.currentMovieId);
+    return {
+      label: activeMovie ? `Movie: ${activeMovie.title}` : 'Movie',
+      date: activeMovie?.releaseDate || null
+    };
+  }
+
   const seasonProgress = getCurrentSeasonProgress(anime);
   if (seasonProgress.season?.nextEpisodeDate) {
     return {
@@ -458,6 +469,10 @@ function getNextReleaseInfo(anime) {
 
 function getLifecycleMessage(anime) {
   if (anime.isDiscontinued) return 'Anime was discontinued';
+  if (anime.currentMovieId) {
+    const activeMovie = anime.movies.find((movie) => movie.id === anime.currentMovieId);
+    return activeMovie ? `Watching Movie: ${activeMovie.title}` : 'Watching Movie';
+  }
 
   const seasonProgress = getCurrentSeasonProgress(anime);
   const finishedCurrentSeason = seasonProgress.watched >= seasonProgress.total;
@@ -522,9 +537,10 @@ function advanceAfterSeasonCompletion(anime) {
   if (movie && !hasWatchedMovie(anime, movie.id)) {
     const state = getMovieState(anime, movie);
     if (state === 'Released') {
-      anime.watchedMovies.push(movie.id);
-      showToast(`Movie completed: ${movie.title}`);
-      notifySound();
+      anime.currentMovieId = movie.id;
+      anime.status = 'Watching';
+      showToast(`Now watching movie: ${movie.title}`);
+      return;
     } else {
       anime.status = 'On Hold';
       showToast(`${movie.title} • Coming Soon`);
@@ -554,6 +570,35 @@ function advanceAfterSeasonCompletion(anime) {
 function updateEpisode(animeId) {
   const anime = ensureInList(animeId, 'Watching');
   if (!anime) return;
+
+  if (anime.currentMovieId) {
+    if (!anime.watchedMovies.includes(anime.currentMovieId)) {
+      anime.watchedMovies.push(anime.currentMovieId);
+    }
+
+    const finishedMovie = anime.movies.find((movie) => movie.id === anime.currentMovieId);
+    anime.currentMovieId = null;
+
+    const nextSeason = getNextSeason(anime, anime.currentSeason);
+    if (nextSeason?.released) {
+      anime.currentSeason = nextSeason.number;
+      anime.currentEpisode = 0;
+      anime.status = 'Watching';
+      showToast(`Movie completed • Now watching Season ${nextSeason.number}`);
+    } else if (nextSeason && !nextSeason.released) {
+      anime.status = 'On Hold';
+      showToast(`${finishedMovie?.title || 'Movie'} completed • Season ${nextSeason.number} coming soon`);
+    } else {
+      anime.status = anime.isDiscontinued ? 'Dropped' : 'Completed';
+      showToast(anime.isDiscontinued ? 'Anime was discontinued' : 'Full Completed');
+    }
+
+    writeStorage();
+    queueListRender();
+    queueTrendRender();
+    if (appState.selectedAnimeId === animeId) fillDetailsModal(animeId);
+    return;
+  }
 
   const seasonProgress = getCurrentSeasonProgress(anime);
   if (!seasonProgress.season) return;
